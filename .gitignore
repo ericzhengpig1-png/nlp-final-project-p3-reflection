@@ -1,0 +1,14 @@
+.venv/
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+.env
+.env.*
+*.key
+*.pem
+models/
+checkpoints/
+data/*
+!data/README.md
+logs/*
+!logs/README.md

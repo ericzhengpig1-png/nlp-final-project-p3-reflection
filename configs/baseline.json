@@ -20,6 +20,7 @@
     "file": "qwen2.5-1.5b-instruct-q4_k_m.gguf",
     "sha256": "6a1a2eb6d15622bf3c96857206351ba97e1af16c30d7a74ee38970e434e9407e",
     "llama_cpp_build": "b12244",
+    "prompt_rendering": "raw_completion",
     "context_tokens": 8192,
     "action_tokens": 128,
     "reflection_tokens": 256,

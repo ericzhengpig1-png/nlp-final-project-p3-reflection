@@ -19,8 +19,9 @@ class LlamaServer:
         build = props.get("build_info", "")
         if not build.startswith(f'{model["llama_cpp_build"]}-'):
             raise ValueError(f"Unexpected llama-server build: {build}")
-        record("model_server", alias=self.alias, build=build,
-               chat_template_sha256=hashlib.sha256(props["chat_template"].encode()).hexdigest())
+        if model["prompt_rendering"] != "raw_completion":
+            raise ValueError("Expected the original Reflexion completion prefix")
+        record("model_server", alias=self.alias, build=build, prompt_rendering=model["prompt_rendering"])
 
     def request(self, path, payload=None):
         data = json.dumps(payload).encode() if payload is not None else None
@@ -32,14 +33,11 @@ class LlamaServer:
             raise RuntimeError(f"{path}: HTTP {error.code}: {error.read().decode()}") from error
 
     def generate(self, prompt, kind, seed, **context):
-        wrapped = self.request("/apply-template", {
-            "messages": [{"role": "user", "content": prompt}]
-        })["prompt"]
         request = {**self.model["sampling"], "seed": seed, "cache_prompt": False,
-                   "n_predict": self.model[f"{kind}_tokens"], "prompt": wrapped,
+                   "n_predict": self.model[f"{kind}_tokens"], "prompt": prompt,
                    "stop": ["\n"] if kind == "action" else []}
         self.record("model_request", kind=kind, seed=seed, prompt=prompt,
-                    prompt_sha256=hashlib.sha256(wrapped.encode()).hexdigest(), **context)
+                    prompt_sha256=hashlib.sha256(prompt.encode()).hexdigest(), **context)
         start = time.perf_counter()
         response = self.request("/completion", request)
         timing = response["timings"]

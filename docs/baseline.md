@@ -5,7 +5,7 @@
 ## 从任务到结果
 
 1. `configs/task_registry.json` 中的相对任务 ID 定位到原始 `game.tw-pddl`。每次尝试新建一个只加载此任务的 TextWorld 环境，使用 ALFWorld 的命名和任务信息包装器，再调用 `reset()`。每次比较初始观察和底层事实的哈希，跨 A/B 也比较。
-2. `run_task()` 用原始 Reflexion 的同类示例和 `EnvironmentHistory` 组装动作提示词。固定模型在 `LlamaServer.generate()` 中返回一行输出。模型输入是任务观察、交互历史和 B 的文本反思。
+2. `run_task()` 用原始 Reflexion 的同类示例和 `EnvironmentHistory` 组装动作提示词。固定模型在 `LlamaServer.generate()` 中直接续写原始提示词前缀并返回一行输出。模型输入是任务观察、交互历史和 B 的文本反思。
 3. 动作进入 `env.step(command)`，观察回到历史。原示例中的 `put X in/on Y` 转成新版环境的 `move X to Y`，轨迹保存两种写法。思考行获得 `OK.`，单独计入模型回合。每次最多 49 个策略回合、30 个环境动作。
 4. 成功只取 TextWorld 的 `state.won`。成功立即退出任务。到动作上限、环境结束、连续重复输出或策略回合上限会结束当前尝试。环境与历史会重新创建，最多尝试 3 次。
 5. B 在失败且仍有重试时调用上游 `_generate_reflection_query()`，传入失败轨迹和最多三条已有反思。同一模型生成的新反思进入下一次 `EnvironmentHistory` 的记忆段。A 的记忆列表始终为空。两组共用任务、动作逻辑、示例、模型和种子公式。

@@ -29,7 +29,7 @@ def family_of(task):
     return task.split("/")[-2].split("-")[0]
 
 
-def rollout(task, attempt, bank, baseline, config, model, record, reset_hashes, examples):
+def rollout(task, attempt, bank, baseline, config, model, record, reset_hashes, examples, demo_actions=None):
     family = family_of(task)
     path = game_path(task).resolve()
     steps = []
@@ -46,6 +46,9 @@ def rollout(task, attempt, bank, baseline, config, model, record, reset_hashes, 
         record("reset", goal=goal, initial_state_sha256=initial, env_seed=seed, game_sha256=digest(path))
         reason = "env_action_cap"
         for index in range(1, baseline["max_env_actions"] + 1):
+            if demo_actions is not None and index > len(demo_actions):
+                reason = "demonstration_end"
+                break
             candidates = list(dict.fromkeys(state.admissible_commands))
             cards = retrieve(bank, family, state.feedback, candidates, config)
             snapshot = {
@@ -58,7 +61,7 @@ def rollout(task, attempt, bank, baseline, config, model, record, reset_hashes, 
             prompt = render(snapshot)
             step_seed = seed + 1000 * (attempt - 1) + index
             record("decision", step=index, seed=step_seed, snapshot=snapshot, prompt=prompt)
-            action = model.choose(prompt, candidates, step_seed)
+            action = model.choose(prompt, candidates, step_seed) if demo_actions is None else demo_actions[index - 1]
             if action not in candidates:
                 raise RuntimeError(f"Model returned a non-admissible action: {action!r}")
             state, reward, done = env.step(action)
@@ -95,34 +98,43 @@ def build(run, tasks, archive, baseline, config, model, record, context, example
     prepare_training(archive, tasks, baseline["dataset"]["sha256"])
     candidates, source_steps, task_results = [], {}, {}
     reset_hashes = {}
-    for task in tasks:
-        context.update(task_id=task, phase="construction", attempt=1)
-        goal, steps, result = rollout(task, 1, [], baseline, config, model, record, reset_hashes, examples)
-        task_results[task] = result
-        context.update(phase="localization")
+    for task_index, task in enumerate(tasks, 1):
+        task_results[task] = []
         item = task.split("/")[-2].split("-")[1]
-        notes = model.localize(goal, steps, result["success"], item, baseline["seed"])
-        by_step = {step["step"]: step for step in steps}
-        for i, note in enumerate(notes, 1):
-            card_id = f'{config["experiment"]}-{len(task_results):02d}-{i:02d}'
-            step = by_step.get(note["step"])
-            hint = note["hint"]
-            if (step is None or not hint.strip() or not note["cue"].strip() or len(hint) > 550
-                    or note["recommend"] not in {action_head(a) for a in step["snapshot"]["candidates"]}
-                    or (note["role"] == "success_maintain" and note["recommend"] != action_head(step["action"]))):
-                record("candidate_invalid", card_id=card_id, note=note)
-                continue
-            card = {"id": card_id, "source_task": task, "family": family_of(task), **note}
-            candidates.append(card)
-            source_steps[card_id] = step
-            record("candidate", card=card, source_action=step["action"])
-        print(f"Training {task.split('/')[-2]} {result['success']} with {len(steps)} actions", flush=True)
+        walkthrough = json.loads(game_path(task).read_bytes())["walkthrough"]
+        for attempt, (source_type, demo_actions) in enumerate(
+            (("policy", None), ("training_walkthrough", walkthrough)), 1
+        ):
+            context.update(task_id=task, phase="construction", attempt=attempt, source_type=source_type)
+            goal, steps, result = rollout(task, attempt, [], baseline, config, model, record,
+                                          reset_hashes, examples, demo_actions=demo_actions)
+            task_results[task].append({"source_type": source_type, **result})
+            context.update(phase="localization")
+            notes = model.localize(goal, steps, result["success"], item, baseline["seed"])
+            by_step = {step["step"]: step for step in steps}
+            for i, note in enumerate(notes, 1):
+                card_id = f'{config["experiment"]}-{task_index:02d}-{attempt}-{i:02d}'
+                step = by_step.get(note["step"])
+                hint = note["hint"]
+                if (step is None or not hint.strip() or not note["cue"].strip() or len(hint) > 550
+                        or note["recommend"] not in {action_head(a) for a in step["snapshot"]["candidates"]}
+                        or (note["role"] == "success_maintain" and note["recommend"] != action_head(step["action"]))):
+                    record("candidate_invalid", card_id=card_id, note=note)
+                    continue
+                card = {"id": card_id, "source_task": task, "source_attempt": attempt,
+                        "source_type": source_type, "family": family_of(task), **note}
+                candidates.append(card)
+                source_steps[card_id] = step
+                record("candidate", card=card, source_action=step["action"])
+            print(f"Training {task.split('/')[-2]} {source_type} {result['success']} "
+                  f"with {len(steps)} actions", flush=True)
     construction_seconds = time.perf_counter() - start
     dump(run / "candidates.json", candidates)
     accepted = []
     start = time.perf_counter()
     for card in candidates:
-        context.update(task_id=card["source_task"], phase="screening", attempt=1, card_id=card["id"])
+        context.update(task_id=card["source_task"], phase="screening", attempt=card["source_attempt"],
+                       source_type=card["source_type"], card_id=card["id"])
         step = source_steps[card["id"]]
         try:
             result = model.probe(step, card)
@@ -198,7 +210,7 @@ def main():
     if (len(train) != 6 or set(map(family_of, train)) != set(RECIPES)
             or any(not t.startswith("json_2.1.1/train/") for t in train)
             or len(dev) != 10 or len(held) != 30 or len(set(train + dev + held)) != 46
-            or config["replay_action_tokens"] != 1 or config["construction_attempts"] != 1):
+            or config["replay_action_tokens"] != 1 or config["construction_attempts"] != 2):
         raise ValueError("Unexpected training/evaluation registry or experiment settings")
     if (version("alfworld"), version("textworld")) != (baseline["alfworld"]["version"], baseline["alfworld"]["textworld"]):
         raise ValueError("Use the pinned baseline environment")

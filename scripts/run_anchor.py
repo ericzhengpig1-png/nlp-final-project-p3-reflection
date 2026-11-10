@@ -99,7 +99,8 @@ def build(run, tasks, archive, baseline, config, model, record, context):
         goal, steps, result = rollout(task, 1, [], baseline, config, model, record, reset_hashes)
         task_results[task] = result
         context.update(phase="localization")
-        notes = model.localize(goal, steps, result["success"], baseline["seed"])
+        item = task.split("/")[-2].split("-")[1]
+        notes = model.localize(goal, steps, result["success"], item, baseline["seed"])
         by_step = {step["step"]: step for step in steps}
         for i, note in enumerate(notes, 1):
             card_id = f'{config["experiment"]}-{len(task_results):02d}-{i:02d}'

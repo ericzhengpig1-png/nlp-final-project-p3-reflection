@@ -158,42 +158,74 @@ class AnchorModel:
             **admission(p, q, source, card["role"], self.config),
         }
 
-    def localize(self, goal, steps, won, seed):
-        if not steps:
-            return []
-        count = min(len(steps), 20)
-        selected = [steps[i * (len(steps) - 1) // max(count - 1, 1)] for i in range(count)]
+    def localize(self, goal, steps, won, item, seed):
+        observed_item = re.compile(rf"\b{re.escape(item.lower())} \d+\b", re.I)
+        good, bad = [], []
+        seen = set()
+        for step in steps:
+            action, feedback = step["action"], step["feedback"]
+            head = action_head(action)
+            repeated = (action, feedback) in seen
+            seen.add((action, feedback))
+            if repeated or feedback == "Nothing happens.":
+                bad.append(step)
+            elif head in ("go to", "open", "take", "move", "clean", "cool", "heat") and observed_item.search(feedback):
+                good.append(step)
+        if won and steps[-1] not in good:
+            good.append(steps[-1])
+        limit = self.config["localizer_max_cards"]
+        notes = []
+        for role, eligible, budget in (
+            ("success_maintain", good, limit // 2),
+            ("failure_correction", bad, limit - limit // 2),
+        ):
+            if eligible:
+                notes.extend(self.write_hints(goal, steps, won, eligible, budget, role, seed))
+        return notes
+
+    def write_hints(self, goal, steps, won, eligible, budget, role, seed):
+        selectable = eligible[:9] + eligible[-1:] if len(eligible) > 10 else eligible
+        ids = [s["step"] for s in selectable]
+        context_steps = {s["step"]: s for s in selectable}
+        for i in range(10):
+            step = steps[i * (len(steps) - 1) // 9]
+            context_steps.setdefault(step["step"], step)
         evidence = [{
             "step": s["step"], "observation": s["snapshot"]["observation"][:350],
             "legal_heads": sorted({action_head(a) for a in s["snapshot"]["candidates"]}),
             "action": s["action"], "feedback": s["feedback"][:240],
-        } for s in selected]
+        } for _, s in sorted(context_steps.items())]
         schema = {"type": "object", "properties": {"notes": {
-            "type": "array", "minItems": 0, "maxItems": self.config["localizer_max_cards"],
+            "type": "array", "minItems": 0, "maxItems": budget,
             "items": {"type": "object", "properties": {
-                "step": {"type": "integer", "enum": [s["step"] for s in selected]},
-                "role": {"enum": ["success_maintain", "failure_correction"]},
+                "step": {"type": "integer", "enum": ids},
                 "cue": {"type": "string"}, "recommend": {"enum": list(HEADS)},
                 "hint": {"type": "string"},
-            }, "required": ["step", "role", "cue", "recommend", "hint"],
+            }, "required": ["step", "cue", "recommend", "hint"],
                 "additionalProperties": False},
         }}, "required": ["notes"], "additionalProperties": False}
+        task = (
+            "Choose useful decisions to preserve. Reinforce the observed action in the note."
+            if role == "success_maintain" else
+            "Choose repeated or ineffective decisions. Name what went wrong, then specify a different, "
+            "immediately legal command to try at that point. When a move failed, suggest searching "
+            "a relevant unchecked location or taking the visible goal object if available."
+        )
         instruction = (
-            "Review the following game trajectory. Identify up to five important local decisions. "
-            "Include both a helpful move to keep and an unhelpful move to correct when supported "
-            "by feedback, even if the episode failed. Exclude uncertain decisions. "
+            f"Review this game trajectory. {task} Select up to {budget} distinct steps only from {ids}. "
             "For each, write a short concrete one-action English hint. "
-            "State when it applies in cue; recommend must be an available action head at that step. "
-            "For success_maintain reinforce the observed action. For failure_correction tell "
-            "what to avoid and give an immediate alternative. Use generic object names where "
-            "possible so the note can transfer. Use only the observations available by that step "
-            "to describe its situation. Return a JSON object with the notes array.\n"
+            "Give a short cue for when to apply it. The recommend field must match the verb of "
+            "the hint and be listed in legal_heads at that step. Use generic item names where possible "
+            "so the hint transfers. Base the cue on the observation at the selected step. "
+            "Return a JSON object with the notes array.\n"
             f"Goal: {goal}\nEpisode success: {won}\nTrajectory: {json.dumps(evidence)}"
         )
         prompt = self.server.request("/apply-template", {
             "messages": [{"role": "user", "content": instruction}],
         })["prompt"]
-        self.record("localizer_prompt", prompt=prompt, selected_steps=[s["step"] for s in selected])
+        self.record("localizer_prompt", prompt=prompt, role=role, eligible_steps=ids)
         response = self.complete(prompt, "localizer", json_schema=schema, temperature=0.0, seed=seed,
                                  n_predict=self.config["localizer_tokens"])
-        return json.loads(response["content"])["notes"]
+        notes = json.loads(response["content"])["notes"]
+        notes = {note["step"]: {**note, "role": role} for note in notes}
+        return list(notes.values())

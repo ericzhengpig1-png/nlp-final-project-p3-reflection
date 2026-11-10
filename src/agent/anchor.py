@@ -13,10 +13,6 @@ RECIPES = {
     "pick_two_obj_and_place": "Place two distinct objects of the requested kind in the same receptacle.",
 }
 
-HEADS = ("go to", "open", "close", "take", "move", "clean", "heat", "cool",
-         "use", "examine", "look", "inventory", "help")
-
-
 def action_head(command):
     return "go to" if command.startswith("go to ") else command.split()[0]
 
@@ -28,7 +24,9 @@ def render(snapshot, hint=None):
     return (
         "Complete the household goal. Choose exactly one listed command. "
         "Use observations to track what you hold and what you have finished. "
-        "Avoid revisiting locations without a reason. Continue after <action> with the command only.\n"
+        "Search visible surfaces for the requested object. Avoid repeating open/close or examine "
+        "when it yields no progress. Continue after <action> with the command only.\n"
+        f"Example interaction:\n{snapshot.get('demo', '(none)')}\n"
         f"Goal: {snapshot['goal']}\n"
         f"Task guidance: {RECIPES[snapshot['family']]}\n"
         f"Recent actions and feedback:\n{history or '(start)'}\n"
@@ -195,37 +193,52 @@ class AnchorModel:
             "legal_heads": sorted({action_head(a) for a in s["snapshot"]["candidates"]}),
             "action": s["action"], "feedback": s["feedback"][:240],
         } for _, s in sorted(context_steps.items())]
-        schema = {"type": "object", "properties": {"notes": {
-            "type": "array", "minItems": 0, "maxItems": budget,
-            "items": {"type": "object", "properties": {
-                "step": {"type": "integer", "enum": ids},
-                "cue": {"type": "string"}, "recommend": {"enum": list(HEADS)},
-                "hint": {"type": "string"},
-            }, "required": ["step", "cue", "recommend", "hint"],
-                "additionalProperties": False},
-        }}, "required": ["notes"], "additionalProperties": False}
-        task = (
-            "Choose useful decisions to preserve. Reinforce the observed action in the note."
-            if role == "success_maintain" else
-            "Choose repeated or ineffective decisions. Name what went wrong, then specify a different, "
-            "immediately legal command to try at that point. When a move failed, suggest searching "
-            "a relevant unchecked location or taking the visible goal object if available."
+        schema = {"type": "object", "properties": {"steps": {
+            "type": "array", "minItems": 1, "maxItems": min(len(ids), budget),
+            "items": {"type": "integer", "enum": ids},
+        }}, "required": ["steps"], "additionalProperties": False}
+        task = "Choose useful decisions to preserve" if role == "success_maintain" else "Choose mistakes to correct"
+        selection = self.structured(
+            f"Review the game trajectory. {task} from {ids}. "
+            f"Return up to {budget} distinct consequential step numbers in steps.\n"
+            f"Goal: {goal}\nEpisode success: {won}\nTrajectory: {json.dumps(evidence)}",
+            schema, "localizer", seed,
         )
-        instruction = (
-            f"Review this game trajectory. {task} Select up to {budget} distinct steps only from {ids}. "
-            "For each, write a short concrete one-action English hint. "
-            "Give a short cue for when to apply it. The recommend field must match the verb of "
-            "the hint and be listed in legal_heads at that step. Use generic item names where possible "
-            "so the hint transfers. Base the cue on the observation at the selected step. "
-            "Return a JSON object with the notes array.\n"
-            f"Goal: {goal}\nEpisode success: {won}\nTrajectory: {json.dumps(evidence)}"
+        return [self.write_hint(goal, context_steps[index], role, seed)
+                for index in dict.fromkeys(selection["steps"])]
+
+    def write_hint(self, goal, step, role, seed):
+        source = step["action"]
+        success = role == "success_maintain"
+        commands = [source] if success else [
+            action for action in step["snapshot"]["candidates"]
+            if action_head(action) != action_head(source)
+        ]
+        schema = {"type": "object", "properties": {
+            "action": {"enum": commands}, "cue": {"type": "string"}, "guidance": {"type": "string"},
+        }, "required": ["action", "cue", "guidance"], "additionalProperties": False}
+        task = ("Reinforce the observed action." if success else
+                "Choose one useful alternative from the legal commands. Avoid repeating the recorded action.")
+        note = self.structured(
+            f"{task} Write an English cue describing when the advice applies and a short actionable "
+            "guidance sentence that transfers to similar rooms. Use only evidence in this decision.\n"
+            f"Goal: {goal}\nObservation: {step['snapshot']['observation']}\n"
+            f"Recorded action: {source}\nFeedback: {step['feedback']}\n"
+            f"Legal commands for the advice: {' | '.join(commands)}",
+            schema, "hint_writer", seed,
         )
+        action = note["action"]
+        cue = note["cue"].strip()
+        guidance = note["guidance"].strip()
+        instruction = f"Prefer {action}." if success else f"Avoid repeating {source}; try {action}."
+        return {"step": step["step"], "role": role, "cue": cue, "recommend": action_head(action),
+                "hint": f"{guidance} {instruction}".strip()}
+
+    def structured(self, instruction, schema, kind, seed):
         prompt = self.server.request("/apply-template", {
             "messages": [{"role": "user", "content": instruction}],
         })["prompt"]
-        self.record("localizer_prompt", prompt=prompt, role=role, eligible_steps=ids)
-        response = self.complete(prompt, "localizer", json_schema=schema, temperature=0.0, seed=seed,
+        self.record("extraction_prompt", kind=kind, prompt=prompt, schema=schema)
+        response = self.complete(prompt, kind, json_schema=schema, temperature=0.0, seed=seed,
                                  n_predict=self.config["localizer_tokens"])
-        notes = json.loads(response["content"])["notes"]
-        notes = {note["step"]: {**note, "role": role} for note in notes}
-        return list(notes.values())
+        return json.loads(response["content"])

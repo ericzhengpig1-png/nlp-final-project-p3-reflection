@@ -8,7 +8,7 @@ from importlib.metadata import version
 from pathlib import Path
 from zipfile import ZipFile
 
-from run_baseline import ROOT, git, sha256
+from run_baseline import PREFIXES, ROOT, git, sha256
 from setup_baseline import digest
 from src.agent.anchor import AnchorModel, RECIPES, action_head, render, retrieve
 from src.agent.llama_server import LlamaServer
@@ -29,7 +29,7 @@ def family_of(task):
     return task.split("/")[-2].split("-")[0]
 
 
-def rollout(task, attempt, bank, baseline, config, model, record, reset_hashes):
+def rollout(task, attempt, bank, baseline, config, model, record, reset_hashes, examples):
     family = family_of(task)
     path = game_path(task).resolve()
     steps = []
@@ -50,6 +50,7 @@ def rollout(task, attempt, bank, baseline, config, model, record, reset_hashes):
             cards = retrieve(bank, family, state.feedback, candidates, config)
             snapshot = {
                 "goal": goal, "family": family, "observation": state.feedback,
+                "demo": examples[f"react_{PREFIXES[family]}_0"],
                 "history": [{"action": s["action"], "feedback": s["feedback"]}
                             for s in steps[-12:]],
                 "candidates": candidates, "cards": cards,
@@ -89,14 +90,14 @@ def prepare_training(archive, tasks, expected):
             path.write_bytes(content)
 
 
-def build(run, tasks, archive, baseline, config, model, record, context):
+def build(run, tasks, archive, baseline, config, model, record, context, examples):
     start = time.perf_counter()
     prepare_training(archive, tasks, baseline["dataset"]["sha256"])
     candidates, source_steps, task_results = [], {}, {}
     reset_hashes = {}
     for task in tasks:
         context.update(task_id=task, phase="construction", attempt=1)
-        goal, steps, result = rollout(task, 1, [], baseline, config, model, record, reset_hashes)
+        goal, steps, result = rollout(task, 1, [], baseline, config, model, record, reset_hashes, examples)
         task_results[task] = result
         context.update(phase="localization")
         item = task.split("/")[-2].split("-")[1]
@@ -140,7 +141,7 @@ def build(run, tasks, archive, baseline, config, model, record, context):
             "bank_sha256": digest(run / "bank.json")}
 
 
-def evaluate(tasks, bank_path, baseline, config, model, record, context):
+def evaluate(tasks, bank_path, baseline, config, model, record, context, examples):
     bank_bytes = bank_path.read_bytes()
     bank = json.loads(bank_bytes)
     if bank["experiment"] != config["experiment"]:
@@ -159,7 +160,7 @@ def evaluate(tasks, bank_path, baseline, config, model, record, context):
             results = []
             for attempt in range(1, baseline["max_attempts"] + 1):
                 context.update(task_id=task, attempt=attempt)
-                _, _, result = rollout(task, attempt, cards, baseline, config, model, record, reset_hashes)
+                _, _, result = rollout(task, attempt, cards, baseline, config, model, record, reset_hashes, examples)
                 results.append(result)
                 if result["success"]:
                     break
@@ -201,6 +202,11 @@ def main():
         raise ValueError("Unexpected training/evaluation registry or experiment settings")
     if (version("alfworld"), version("textworld")) != (baseline["alfworld"]["version"], baseline["alfworld"]["textworld"]):
         raise ValueError("Use the pinned baseline environment")
+    example_path = "prompts/alfworld_3prompts.json"
+    example_bytes = (ROOT / "data/reflexion" / example_path).read_bytes()
+    if sha256(example_bytes) != baseline["reflexion"]["files"][example_path]:
+        raise ValueError("Unexpected Reflexion demonstration hash")
+    examples = json.loads(example_bytes)
     tasks = {"probe": [], "build": train, "pilot": dev[:2], "dev": dev}[args.mode]
     run = ROOT / "logs" / args.run_id
     run.mkdir(parents=True, exist_ok=False)
@@ -227,9 +233,9 @@ def main():
                 card = {"hint": "Take the mug now while it is within reach.", "role": "success_maintain"}
                 summary = model.probe(step, card)
             elif args.mode == "build":
-                summary = build(run, tasks, args.archive, baseline, config, model, record, context)
+                summary = build(run, tasks, args.archive, baseline, config, model, record, context, examples)
             else:
-                summary = evaluate(tasks, args.bank, baseline, config, model, record, context)
+                summary = evaluate(tasks, args.bank, baseline, config, model, record, context, examples)
         except (Exception, KeyboardInterrupt) as error:
             record("run_error", error=f"{type(error).__name__}: {error}")
             raise

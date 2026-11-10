@@ -1,0 +1,4 @@
+go to bed 1
+take book 1 from bed 1
+go to sidetable 1
+put book 1 in/on sidetable 1

@@ -1,0 +1,32 @@
+{
+  "alfworld": {"version": "0.4.2", "commit": "1558ba46d078279ecb4c5d33a6cdffc96714a2d2", "textworld": "1.6.2"},
+  "dataset": {
+    "url": "https://github.com/alfworld/alfworld/releases/download/0.4.0/json_2.1.2_tw-pddl.zip",
+    "sha256": "eea90499df27b9cb3147d1d1927264146d38194b575e25f70a82875545742dcb"
+  },
+  "reflexion": {
+    "commit": "218cf0ef1df84b05ce379dd4a8e47f17766733a0",
+    "files": {
+      "env_history.py": "b41ee4eacbdb6f98b136f88ae2051de4bb65b583742c952ff100230090c87d0e",
+      "generate_reflections.py": "d7fbe4af7ff21ce9bc73ad2bcf16bf265682d1fb3554dc62985f3ada09997ef7",
+      "utils.py": "581cbd0eb677e8b535bb98bd2f7ef2a6c3d6fd7db71e261f1e93fa95844709a8",
+      "reflexion_few_shot_examples.txt": "5040995a3cdc88bce30fa26bec3ca4875ced8db98b7b2859f5c1614deec716e7",
+      "prompts/alfworld_3prompts.json": "a10976b4ae99f4802aa9e621933bb71065ae103f2bd273a24466ab1005fbc45a"
+    }
+  },
+  "model": {
+    "id": "Qwen/Qwen2.5-1.5B-Instruct-GGUF",
+    "revision": "91cad51170dc346986eccefdc2dd33a9da36ead9",
+    "file": "qwen2.5-1.5b-instruct-q4_k_m.gguf",
+    "sha256": "6a1a2eb6d15622bf3c96857206351ba97e1af16c30d7a74ee38970e434e9407e",
+    "llama_cpp_build": "b12244",
+    "context_tokens": 8192,
+    "action_tokens": 128,
+    "reflection_tokens": 256,
+    "sampling": {"temperature": 0.2, "top_p": 1.0, "top_k": 0, "min_p": 0.0, "repeat_penalty": 1.0}
+  },
+  "max_attempts": 3,
+  "max_env_actions": 30,
+  "max_policy_turns": 49,
+  "seed": 4051
+}

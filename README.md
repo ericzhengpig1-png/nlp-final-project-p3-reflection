@@ -4,14 +4,16 @@ AIAA 4051 自然语言处理课程项目
 
 我们想知道：**智能体在 ALFWorld 做错一次之后，能不能利用文字反思，在下一次尝试里改变行动、少犯同样的错？**
 
+从本地复现 M1，请先看 [ALFWorld 与 A/B 基线](docs/baseline.md)。教程、两任务试跑和十任务开发集共用 `scripts/run_baseline.py`。
+
 ## 仓库导航
 
 | 我想做什么 | 从这里开始 |
 | --- | --- |
 | 复现 A/B 基线 | `scripts/run_baseline.py` → `configs/` → `src/` |
 | 看 Agent 如何执行和反思 | `src/agent/`、`src/environment/`、`src/reflection/` |
-| 比较原始反思与自定义反思 | `prompts/`；对照要求见 `docs/experiment_protocol.md` |
-| 跑 A/B/C 对照或重算指标 | `scripts/run_experiment.py`、`scripts/analyze_results.py` |
+| 核对原始提示词、反思和模型版本 | [基线说明](docs/baseline.md)及 `configs/baseline.json` |
+| A/B/C 留出对照 | M2–M3 规划，开发集验证后冻结 C |
 | 查成功率、图表或失败案例 | `results/tables/`、`results/figures/`、`results/failure_analysis/` |
 | 找某次运行的完整轨迹 | 从结果里的运行编号查 `logs/README.md` 的定位方式 |
 | 接手队友的工作 | [AI_SYNC.md](AI_SYNC.md) 看近期交接；共享 Notion 看负责人、截止日期和验收标准 |

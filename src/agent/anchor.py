@@ -198,14 +198,23 @@ class AnchorModel:
             "items": {"type": "integer", "enum": ids},
         }}, "required": ["steps"], "additionalProperties": False}
         task = "Choose useful decisions to preserve" if role == "success_maintain" else "Choose mistakes to correct"
-        selection = self.structured(
-            f"Review the game trajectory. {task} from {ids}. "
-            f"Return up to {budget} distinct consequential step numbers in steps.\n"
-            f"Goal: {goal}\nEpisode success: {won}\nTrajectory: {json.dumps(evidence)}",
-            schema, "localizer", seed,
-        )
-        return [self.write_hint(goal, context_steps[index], role, seed)
-                for index in dict.fromkeys(selection["steps"])]
+        try:
+            selection = self.structured(
+                f"Review the game trajectory. {task} from {ids}. "
+                f"Return up to {budget} distinct consequential step numbers in steps.\n"
+                f"Goal: {goal}\nEpisode success: {won}\nTrajectory: {json.dumps(evidence)}",
+                schema, "localizer", seed,
+            )
+        except json.JSONDecodeError as error:
+            self.record("extraction_rejected", role=role, reason=str(error))
+            return []
+        notes = []
+        for index in dict.fromkeys(selection["steps"]):
+            try:
+                notes.append(self.write_hint(goal, context_steps[index], role, seed))
+            except json.JSONDecodeError as error:
+                self.record("extraction_rejected", role=role, step=index, reason=str(error))
+        return notes
 
     def write_hint(self, goal, step, role, seed):
         source = step["action"]
@@ -215,13 +224,15 @@ class AnchorModel:
             if action_head(action) != action_head(source)
         ]
         schema = {"type": "object", "properties": {
-            "action": {"enum": commands}, "cue": {"type": "string"}, "guidance": {"type": "string"},
+            "action": {"enum": commands},
+            "cue": {"type": "string", "minLength": 1, "maxLength": 120},
+            "guidance": {"type": "string", "minLength": 1, "maxLength": 180},
         }, "required": ["action", "cue", "guidance"], "additionalProperties": False}
         task = ("Reinforce the observed action." if success else
                 "Choose one useful alternative from the legal commands. Avoid repeating the recorded action.")
         note = self.structured(
-            f"{task} Write an English cue describing when the advice applies and a short actionable "
-            "guidance sentence that transfers to similar rooms. Use only evidence in this decision.\n"
+            f"{task} Write a short English cue (under 12 words) and one practical guidance sentence "
+            "(under 20 words). Use only evidence in this decision.\n"
             f"Goal: {goal}\nObservation: {step['snapshot']['observation']}\n"
             f"Recorded action: {source}\nFeedback: {step['feedback']}\n"
             f"Legal commands for the advice: {' | '.join(commands)}",

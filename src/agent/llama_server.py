@@ -16,7 +16,10 @@ class LlamaServer:
             raise ValueError("llama-server context size differs from baseline.json")
         if props.get("total_slots") != 1 or props.get("model_alias") != self.alias:
             raise ValueError("Use the documented model alias and one llama-server slot")
-        record("model_server", alias=self.alias, build=props.get("build_info"),
+        build = props.get("build_info", "")
+        if not build.startswith(f'{model["llama_cpp_build"]}-'):
+            raise ValueError(f"Unexpected llama-server build: {build}")
+        record("model_server", alias=self.alias, build=build,
                chat_template_sha256=hashlib.sha256(props["chat_template"].encode()).hexdigest())
 
     def request(self, path, payload=None):

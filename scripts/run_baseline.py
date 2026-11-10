@@ -162,6 +162,8 @@ def main():
 
     config = json.loads((ROOT / "configs/baseline.json").read_bytes())
     registry = json.loads((ROOT / "configs/task_registry.json").read_bytes())
+    if (version("alfworld"), version("textworld")) != (config["alfworld"]["version"], config["alfworld"]["textworld"]):
+        raise ValueError("Install the pinned ALFWorld and TextWorld versions before running")
     count = {"manual": 1, "pilot": 2, "dev": 10}[args.mode]
     tasks = registry["development"][:count]
     if len(tasks) != count or len(set(tasks)) != count:
@@ -217,11 +219,15 @@ def main():
                         attempts[task_id] = run_task(game, condition, config, assets, model, record, reset_hashes)
                         print(f"{condition} {task_id}: {attempts[task_id]}", flush=True)
                     failed_first = [task for task, outcomes in attempts.items() if not outcomes[0]]
+                    first_successes = len(tasks) - len(failed_first)
+                    total_successes = sum(map(any, attempts.values()))
+                    recovered = sum(any(attempts[task][1:]) for task in failed_first)
                     summary[condition] = {
-                        "tasks": len(tasks), "first_successes": len(tasks) - len(failed_first),
-                        "total_successes": sum(map(any, attempts.values())),
-                        "initial_failures": failed_first,
-                        "recovered": sum(any(attempts[task][1:]) for task in failed_first),
+                        "tasks": len(tasks), "first_successes": first_successes,
+                        "first_success_rate": first_successes / len(tasks),
+                        "total_successes": total_successes, "cumulative_success_rate": total_successes / len(tasks),
+                        "initial_failures": failed_first, "recovered": recovered,
+                        "recovery_rate": recovered / len(failed_first) if failed_first else None,
                         "attempts": attempts, **totals[condition],
                     }
         except (Exception, KeyboardInterrupt) as error:

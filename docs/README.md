@@ -17,6 +17,7 @@
 | 学校实测 | [2026-11-23 学校端准备](reports/school-preparation-2026-11-23.md) | 已处理资源下载失败，历史准备证据与校验记录 |
 | 当前运行 | [HPC 一期实际运行流程](experiments/school-phase1.md) | UniScheduler 入口、CUDA 编译、S1/S4 优先四组短作业与后台运行 |
 | 提交记录 | [S1/S4 短作业记录](reports/school-priority-launch-2026-11-23.md) | 实际作业号、范围、时限、验证与证据路径 |
+| 当前实测 | [GPU 队列诊断与冒烟通过](reports/school-queue-diagnosis-2026-11-23.md) | ai / MIG 可用证据、四组单题结果、首轮审计修复及正式批次迁移 |
 | 历史复审 | [11 月 22 日完整复审](planning/review-2026-11-22.md) | 当时的审阅结论、原定排期与证据索引 |
 | 历史复审 | [planning/plan.html](planning/plan.html) | 可在浏览器打开的一页项目速览 |
 | 实验说明 | [experiments/baseline.md](experiments/baseline.md) | ALFWorld 安装、A/B 基线复现、已运行结果与证据 |

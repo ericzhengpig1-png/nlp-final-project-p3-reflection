@@ -4,6 +4,12 @@
 
 文档入口：[分类索引](docs/README.md) · [研究执行计划](docs/planning/plan.md) · [学校 GPU 流程](docs/experiments/school-gpu-runbook.md) · [就绪检查报告](docs/reports/seven-arm-readiness.md)。历史实验结论保持原记录。
 
+## 2026-11-23 · 学校端资源准备与一期平台确认
+
+- 已 SSH 连接课程实际的一期节点，上传并校验固定数据包、GGUF 与上游文件，原 `setup_baseline.py --model` 成功完成；七组预检、26 个无模型测试和 71 个包依赖检查通过。
+- 实际调度器是 UniScheduler / `jsub`；已纠正运行指南顶部提醒，二期 `school_gpu.sbatch` 不能直接用于该账号。详见[学校端准备报告](docs/reports/school-preparation-2026-11-23.md)。
+- 未运行模型、未提交学校作业。下一步仍需一期作业适配与兼容的 llama.cpp Linux 运行库；用户决定预算后才能启动实验。
+
 ## 2026-11-23 · 七组与学校 GPU 准备
 
 - 已接入 A/B/S1–S5 共用循环、冻结指令/配置、4051/4052 双种子轮转、首轮核对与配对汇总。

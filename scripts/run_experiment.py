@@ -157,6 +157,7 @@ def execute(run, server, seeds, inputs, smoke=False, task_index=None, conditions
         "alfworld": version("alfworld"), "textworld": version("textworld"),
         "started_utc": datetime.now(timezone.utc).isoformat(), "command": sys.argv, "server": server,
         "slurm_job_id": os.environ.get("SLURM_JOB_ID"), "unischeduler_job_id": os.environ.get("JH_JOBID"),
+        "unischeduler_gpu_allocation": os.environ.get("JH_GPU_RANK"),
         "cuda_visible_devices": os.environ.get("CUDA_VISIBLE_DEVICES"),
         "job_log_dir": os.environ.get("P3_JOB_LOG_DIR"),
         "source_sha256": {str(p.relative_to(ROOT)): sha256(p.read_bytes())

@@ -12,7 +12,28 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
+from scripts.school_gpu_device import assigned_device
+
 ROOT = Path(__file__).resolve().parents[1]
+
+
+class Phase1DeviceTest(unittest.TestCase):
+    def test_single_mig_assignment_and_existing_cuda(self):
+        device = 'MIG-8db09adc-7efd-5b05-9968-a7dcfadeadae'
+        env = {'JH_JOBID': '30559', 'JH_GPU_RANK': f'1;g-node01:{device};'}
+        self.assertEqual(assigned_device(env, 'g-node01'), device)
+        self.assertEqual(assigned_device({**env, 'CUDA_VISIBLE_DEVICES': device}, 'g-node01.local'), device)
+        self.assertEqual(assigned_device({'JH_JOBID': '1', 'CUDA_VISIBLE_DEVICES': '0'}, 'host'), '0')
+
+    def test_reject_unassigned_wrong_host_multiple_or_conflicting_device(self):
+        for env in ({}, {'JH_JOBID': '1'}, {'JH_JOBID': '1', 'CUDA_VISIBLE_DEVICES': '-1'},
+                    {'JH_JOBID': '1', 'CUDA_VISIBLE_DEVICES': '0,1'},
+                    {'JH_JOBID': '1', 'JH_GPU_RANK': '1;other:0;'},
+                    {'JH_JOBID': '1', 'JH_GPU_RANK': '2;host:0,1;'},
+                    {'JH_JOBID': '1', 'JH_GPU_RANK': '1;host:MIG-invalid;'},
+                    {'JH_JOBID': '1', 'JH_GPU_RANK': '1;host:0;', 'CUDA_VISIBLE_DEVICES': '1'}):
+            with self.subTest(env=env), self.assertRaises(ValueError):
+                assigned_device(env, 'host')
 
 
 @unittest.skipUnless(sys.platform.startswith('linux'), 'School submission requires Bash')
@@ -45,7 +66,8 @@ print(f'Job <{40000 + len(calls)}> is submitted to queue <test>')
             for index, args in enumerate(calls):
                 self.assertEqual(args[args.index('-w') + 1], f'done({39999 if index == 0 else 40000 + index})')
                 if index < 21:
-                    self.assertEqual(args[args.index('-gpgpu') + 1], '1')
+                    self.assertEqual(args[args.index('-gpgpu') + 1], '1 mig=2')
+                    self.assertEqual(args[args.index('-q') + 1], 'ai')
                     self.assertEqual(args[args.index('-W') + 1], '10')
                     self.assertIn('P3_CONDITIONS=A,B,S1,S4', args)
             self.assertIn('P3_MODE=smoke', calls[0])

@@ -2,15 +2,17 @@
 
 2026-11-23 最新决定：先比较 **A（无反思）、B（原反思）、S1（观察证据）、S4（剩余目标）**。S2、S3、S5 暂不提交。优先级来自[原调研记录](../papers/reflection-remedies-2026-11-23.md)，并非已验证的效果排名。
 
+**队列实测更新：使用 `ai` 队列及 `-gpgpu '1 mig=2'`（一个 A30 12GB MIG 实例）。** 文档列出的 `gpu` 队列目前只含 g-node02/g-node04，调度器没有登记其 GPU 资源；`ai` 包含启用 MIG 的 g-node01。设备检查作业 30559 已成功。原冒烟 30537 首次获分配后因缺少 `CUDA_VISIBLE_DEVICES` 被保护脚本拦下；一期入口现从调度器的 `JH_GPU_RANK` 读取本作业、本节点的单个设备 UUID，拒绝冲突或多设备记录，不手动选择空闲卡。
+
 ## 范围与时限
 
 | 阶段 | 内容 | 资源与上限 |
 | --- | --- | --- |
-| 独立冒烟 | 第一题、4051、四组，4 单元 | 1 GPU，10 分钟 |
-| 正式分批 | 每批一道题、一个种子、四组；10 题 × 2 种子，共 20 批、80 单元 | 每批 1 GPU，10 分钟，串行成功依赖 |
+| 独立冒烟 | 第一题、4051、四组，4 单元 | 1 个 12GB MIG 实例，10 分钟 |
+| 正式分批 | 每批一道题、一个种子、四组；10 题 × 2 种子，共 20 批、80 单元 | 每批 1 个相同规格的 MIG 实例，10 分钟，串行成功依赖 |
 | 合并 | 完整性、版本与首轮审计校验，然后配对汇总 | 1 CPU，5 分钟，不申请 GPU |
 
-20 批正式作业的 GPU 时限合计最多 200 分钟，另加 10 分钟冒烟；实际占用以学校调度记录为准。时限不是预计耗时，超时会停止后续依赖，不能把未完成批次算作失败样本。短作业是否更快获分配仍取决于队列资源。
+20 批正式作业的实例运行时限合计最多 200 分钟，另加 10 分钟冒烟；MIG 计费和实际占用以学校调度记录为准。时限不是预计耗时，超时会停止后续依赖，不能把未完成批次算作失败样本。短作业是否更快获分配仍取决于队列资源。
 
 复用冻结协议中的模型、提示词、采样、每题动作与重试预算。从原七组轮转顺序中过滤出本轮四组；分批使用全局题号，避免每批都重新从 A 开始。不同组的环境和记忆独立重置。冒烟与正式结果分目录保存。
 
@@ -87,4 +89,4 @@ cat logs/实际campaign-merged/summary.json
 
 如需停止整轮，先取消合并及后续等待批次，再取消最前面的活动任务，使用 `jctrl kill 作业号`；ID 从 submission 目录读取。不要重新执行同一 campaign 的提交脚本，也不要在普通登录节点手动启动模型。
 
-命令依据[学校一期作业说明](https://docs.hpc.hkust-gz.edu.cn/docs/hpc12/slurm/job1/)及服务器 `jsub -h`；`gpu` 为官方列出的 A30 队列，见[队列表](https://docs.hpc.hkust-gz.edu.cn/docs/hpc12/slurm/queue/)。
+命令依据[学校一期作业说明](https://docs.hpc.hkust-gz.edu.cn/docs/hpc12/slurm/job1/)及服务器 `jsub -h`；官方[队列表](https://docs.hpc.hkust-gz.edu.cn/docs/hpc12/slurm/queue/)仍列 `gpu`，本次改用可实际调度的 `ai` / MIG 入口。A30 的 `2g.12gb` 规格见 [NVIDIA 文档](https://docs.nvidia.com/datacenter/tesla/mig-user-guide/latest/supported-mig-profiles.html)，通过 UUID 设置可见设备见 [CUDA 文档](https://docs.nvidia.com/cuda/cuda-programming-guide/05-appendices/environment-variables.html)。

@@ -16,7 +16,7 @@ submit_gpu() {
     local mode="$1" seed="$2" task="$3" run="$4" response job
     local dependency=()
     if [[ -n "$previous" ]]; then dependency=(-w "done($previous)"); fi
-    response="$(jsub -q gpu -n 4 -R 'span[hosts=1]' -gpgpu 1 -M 16384 -W 10 \
+    response="$(jsub -q ai -n 4 -R 'span[hosts=1]' -gpgpu '1 mig=2' -M 16384 -W 10 \
         "${dependency[@]}" -J "p3-$mode" -o "$ROOT/logs/unischeduler-%J.out" \
         -e "$ROOT/logs/unischeduler-%J.err" env P3_MODE="$mode" P3_SEEDS="$seed" \
         P3_TASK_INDEX="$task" P3_CONDITIONS=A,B,S1,S4 P3_RUN_ID="$run" \

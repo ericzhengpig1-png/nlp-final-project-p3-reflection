@@ -67,6 +67,7 @@ path, start, end, code, port = sys.argv[1:]
 Path(path).write_text(json.dumps({
     "hostname": socket.gethostname(), "slurm_job_id": os.getenv("SLURM_JOB_ID"),
     "unischeduler_job_id": os.getenv("JH_JOBID"),
+    "unischeduler_gpu_allocation": os.getenv("JH_GPU_RANK"),
     "scheduler": "unischeduler" if os.getenv("JH_JOBID") else ("slurm" if os.getenv("SLURM_JOB_ID") else "container"),
     "cuda_visible_devices": os.getenv("CUDA_VISIBLE_DEVICES"),
     "started_epoch": int(start), "ended_epoch": int(end), "wrapper_seconds": int(end)-int(start),

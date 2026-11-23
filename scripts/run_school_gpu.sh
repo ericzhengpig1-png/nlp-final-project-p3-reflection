@@ -29,7 +29,11 @@ case "${P3_MODE:-screening}" in
     screening) read -r -a seeds <<< "${P3_SEEDS:-4051 4052}" ;;
     smoke) mode_args=(--smoke); seeds=(4051) ;;
     shard)
-        [[ "${P3_TASK_INDEX:-}" =~ ^[0-9]$ && "${P3_SEEDS:-}" =~ ^405[12]$ ]] || { echo 'Shard requires P3_TASK_INDEX=0..9 and one P3_SEEDS=4051 or 4052' >&2; exit 2; }
+        if [[ "${P3_EXPERIMENT:-}" == supplementary-4053 ]]; then
+            [[ "${P3_TASK_INDEX:-}" =~ ^([0-9]|1[0-9])$ && "${P3_SEEDS:-}" == 4053 ]] || { echo 'Supplementary shard requires task 0..19 and seed 4053' >&2; exit 2; }
+        else
+            [[ "${P3_TASK_INDEX:-}" =~ ^[0-9]$ && "${P3_SEEDS:-}" =~ ^405[12]$ ]] || { echo 'Shard requires P3_TASK_INDEX=0..9 and one P3_SEEDS=4051 or 4052' >&2; exit 2; }
+        fi
         mode_args=(--task-index "$P3_TASK_INDEX"); seeds=("$P3_SEEDS") ;;
     *) echo 'P3_MODE must be smoke, shard or screening' >&2; exit 2 ;;
 esac

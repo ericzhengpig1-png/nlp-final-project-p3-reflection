@@ -65,7 +65,8 @@ def merge_runs(paths, output):
     summary = experiment.summarize(ordered, experiment.SEEDS, len(tasks), conditions)
     summary.update(status='complete', mode='merged-screening', conditions=conditions,
                    completed_units=len(ordered), expected_units=len(expected),
-                   full_two_seed_screening=tuple(conditions) == experiment.CONDITIONS,
+                   full_two_seed_screening=not experiment.SUPPLEMENTARY and tuple(conditions) == experiment.CONDITIONS,
+                   experiment_label='supplementary-development' if experiment.SUPPLEMENTARY else 'original-development',
                    all_cost_including_incomplete=costs,
                    note='Complete for the listed conditions only. Smoke and other candidates are excluded. '
                         'Allocation cost and failed runs must be reported separately from scheduler records.')

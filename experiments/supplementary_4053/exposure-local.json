@@ -1,0 +1,865 @@
+{
+  "roots": [
+    "../nlp-final-project-p3-reflection",
+    "../p3-clean-checkout",
+    "../p3-assets",
+    "../../outputs"
+  ],
+  "scanned_text_files": 191,
+  "trial_ids": [
+    "trial_T20190906_221723_123986",
+    "trial_T20190907_041436_588106",
+    "trial_T20190907_051013_060265",
+    "trial_T20190907_083346_800823",
+    "trial_T20190907_114323_767231",
+    "trial_T20190907_133953_562557",
+    "trial_T20190907_210928_389193",
+    "trial_T20190907_231206_512424",
+    "trial_T20190908_020029_636862",
+    "trial_T20190908_020048_814402",
+    "trial_T20190908_032518_891433",
+    "trial_T20190908_032543_712058",
+    "trial_T20190908_050633_745514",
+    "trial_T20190908_052232_887934",
+    "trial_T20190908_053153_077977",
+    "trial_T20190908_091835_825830",
+    "trial_T20190908_113432_673307",
+    "trial_T20190908_113610_425142",
+    "trial_T20190908_113820_480741",
+    "trial_T20190908_114340_674467",
+    "trial_T20190908_125200_737896",
+    "trial_T20190908_142046_281296",
+    "trial_T20190908_145050_918567",
+    "trial_T20190908_183331_203888",
+    "trial_T20190908_205221_748352",
+    "trial_T20190908_205246_776817",
+    "trial_T20190908_222917_366542",
+    "trial_T20190908_225359_617900",
+    "trial_T20190909_021650_880235",
+    "trial_T20190909_040902_085686",
+    "trial_T20190909_062333_424779",
+    "trial_T20190909_064053_839817",
+    "trial_T20190909_064309_357168",
+    "trial_T20190909_073938_279211",
+    "trial_T20190909_081746_857594",
+    "trial_T20190909_102644_926781",
+    "trial_T20190909_102710_795182",
+    "trial_T20190909_105559_983897",
+    "trial_T20190909_110347_624008",
+    "trial_T20190909_110445_675754",
+    "trial_T20190909_121710_650938",
+    "trial_T20190909_150955_575706",
+    "trial_T20190909_174807_646433",
+    "trial_T20190912_221141_608117",
+    "trial_T20190918_154326_823501",
+    "trial_T20190918_184236_557252"
+  ],
+  "sources": [
+    {
+      "path": "..\\nlp-final-project-p3-reflection\\configs\\anchor_attempt1.json",
+      "sha256": "b25e9a42105cd91312dd03220bac475d6cca88ad33d0b5d3a40d9f943f535ad4",
+      "trials": [
+        "trial_T20190906_221723_123986",
+        "trial_T20190907_210928_389193",
+        "trial_T20190908_113820_480741",
+        "trial_T20190909_040902_085686",
+        "trial_T20190909_073938_279211",
+        "trial_T20190909_150955_575706"
+      ]
+    },
+    {
+      "path": "..\\nlp-final-project-p3-reflection\\configs\\task_registry.json",
+      "sha256": "1550dd135b95c24678ac4d6ddbe3bdfc5d8b7f34f80c10c5f16c1fc9297c256e",
+      "trials": [
+        "trial_T20190907_041436_588106",
+        "trial_T20190907_051013_060265",
+        "trial_T20190907_083346_800823",
+        "trial_T20190907_114323_767231",
+        "trial_T20190907_133953_562557",
+        "trial_T20190907_231206_512424",
+        "trial_T20190908_020029_636862",
+        "trial_T20190908_020048_814402",
+        "trial_T20190908_032518_891433",
+        "trial_T20190908_032543_712058",
+        "trial_T20190908_050633_745514",
+        "trial_T20190908_052232_887934",
+        "trial_T20190908_053153_077977",
+        "trial_T20190908_091835_825830",
+        "trial_T20190908_113432_673307",
+        "trial_T20190908_113610_425142",
+        "trial_T20190908_114340_674467",
+        "trial_T20190908_125200_737896",
+        "trial_T20190908_142046_281296",
+        "trial_T20190908_145050_918567",
+        "trial_T20190908_183331_203888",
+        "trial_T20190908_205221_748352",
+        "trial_T20190908_205246_776817",
+        "trial_T20190908_222917_366542",
+        "trial_T20190908_225359_617900",
+        "trial_T20190909_021650_880235",
+        "trial_T20190909_062333_424779",
+        "trial_T20190909_064053_839817",
+        "trial_T20190909_064309_357168",
+        "trial_T20190909_081746_857594",
+        "trial_T20190909_102644_926781",
+        "trial_T20190909_102710_795182",
+        "trial_T20190909_105559_983897",
+        "trial_T20190909_110347_624008",
+        "trial_T20190909_110445_675754",
+        "trial_T20190909_121710_650938",
+        "trial_T20190909_174807_646433",
+        "trial_T20190912_221141_608117",
+        "trial_T20190918_154326_823501",
+        "trial_T20190918_184236_557252"
+      ]
+    },
+    {
+      "path": "..\\nlp-final-project-p3-reflection\\docs\\experiments\\baseline.md",
+      "sha256": "3100c74c54f89eb43af9bb2058547000da5208dad62aa4aed1d6d92b293846a7",
+      "trials": [
+        "trial_T20190908_050633_745514"
+      ]
+    },
+    {
+      "path": "..\\nlp-final-project-p3-reflection\\docs\\reports\\C01-01-analysis.json",
+      "sha256": "97f00c37f19a2a2c0a934fb9b6d84ba239c7210cb7d3118ca664bfd5564969a6",
+      "trials": [
+        "trial_T20190907_114323_767231",
+        "trial_T20190907_231206_512424",
+        "trial_T20190908_050633_745514",
+        "trial_T20190908_053153_077977",
+        "trial_T20190908_183331_203888",
+        "trial_T20190909_105559_983897"
+      ]
+    },
+    {
+      "path": "..\\nlp-final-project-p3-reflection\\docs\\reports\\C01-01-evidence.md",
+      "sha256": "91bf7f8c028cd93fee9a845113279afdf67906a62ec5ee7ce96246a1795e811c",
+      "trials": [
+        "trial_T20190907_114323_767231",
+        "trial_T20190907_231206_512424",
+        "trial_T20190908_050633_745514",
+        "trial_T20190908_053153_077977",
+        "trial_T20190908_183331_203888",
+        "trial_T20190909_105559_983897"
+      ]
+    },
+    {
+      "path": "..\\nlp-final-project-p3-reflection\\docs\\reports\\school-queue-diagnosis-2026-11-23.md",
+      "sha256": "e73ef881495b4c9570bcedfca7b921af1787d5f92d2b3e7fd1e26420eab1666c",
+      "trials": [
+        "trial_T20190908_050633_745514"
+      ]
+    },
+    {
+      "path": "..\\nlp-final-project-p3-reflection\\logs\\anchor-attempt1-bank\\bank.json",
+      "sha256": "7c078c6efde5425b612681b01ea21c5bd5ea8fbd7250314a91d83e842ca1b210",
+      "trials": [
+        "trial_T20190906_221723_123986",
+        "trial_T20190907_210928_389193",
+        "trial_T20190908_113820_480741",
+        "trial_T20190909_040902_085686",
+        "trial_T20190909_073938_279211",
+        "trial_T20190909_150955_575706"
+      ]
+    },
+    {
+      "path": "..\\nlp-final-project-p3-reflection\\logs\\anchor-attempt1-bank\\candidates.json",
+      "sha256": "c84e406802cd600fb557fbf7e6699cfddd6c74c9ea4dae3d9ac6685291b22048",
+      "trials": [
+        "trial_T20190906_221723_123986",
+        "trial_T20190907_210928_389193",
+        "trial_T20190908_113820_480741",
+        "trial_T20190909_040902_085686",
+        "trial_T20190909_073938_279211",
+        "trial_T20190909_150955_575706"
+      ]
+    },
+    {
+      "path": "..\\nlp-final-project-p3-reflection\\logs\\anchor-attempt1-bank\\manifest.json",
+      "sha256": "57d0122d0b349bef276c423ecb590680fc390ecf20756137b69aac619336ca25",
+      "trials": [
+        "trial_T20190906_221723_123986",
+        "trial_T20190907_210928_389193",
+        "trial_T20190908_113820_480741",
+        "trial_T20190909_040902_085686",
+        "trial_T20190909_073938_279211",
+        "trial_T20190909_150955_575706"
+      ]
+    },
+    {
+      "path": "..\\nlp-final-project-p3-reflection\\logs\\anchor-attempt1-bank\\summary.json",
+      "sha256": "344298180c05e9277669618685c41805c2f8d6de8f0556b118c30134dfd28db1",
+      "trials": [
+        "trial_T20190906_221723_123986",
+        "trial_T20190907_210928_389193",
+        "trial_T20190908_113820_480741",
+        "trial_T20190909_040902_085686",
+        "trial_T20190909_073938_279211",
+        "trial_T20190909_150955_575706"
+      ]
+    },
+    {
+      "path": "..\\nlp-final-project-p3-reflection\\logs\\anchor-attempt1-bank\\trace.jsonl",
+      "sha256": "d7181c75f075bb674db00800d38e0471e0588ee7b6d4c489020dffc8069a99f7",
+      "trials": [
+        "trial_T20190906_221723_123986",
+        "trial_T20190907_210928_389193",
+        "trial_T20190908_113820_480741",
+        "trial_T20190909_040902_085686",
+        "trial_T20190909_073938_279211",
+        "trial_T20190909_150955_575706"
+      ]
+    },
+    {
+      "path": "..\\nlp-final-project-p3-reflection\\logs\\anchor-attempt1-bank-final\\manifest.json",
+      "sha256": "b2149b0ef717e9d18874151c90b49e3ba3a9b1c4cd7e40531e8353e8f7051a9d",
+      "trials": [
+        "trial_T20190906_221723_123986",
+        "trial_T20190907_210928_389193",
+        "trial_T20190908_113820_480741",
+        "trial_T20190909_040902_085686",
+        "trial_T20190909_073938_279211",
+        "trial_T20190909_150955_575706"
+      ]
+    },
+    {
+      "path": "..\\nlp-final-project-p3-reflection\\logs\\anchor-attempt1-bank-final\\trace.jsonl",
+      "sha256": "372a8e762462d4c0642e5f8129b4d6db1904f57d2bcef45d2a5920323c436e42",
+      "trials": [
+        "trial_T20190908_113820_480741"
+      ]
+    },
+    {
+      "path": "..\\nlp-final-project-p3-reflection\\logs\\anchor-attempt1-bank-v1\\bank.json",
+      "sha256": "55452e8c2bab2a0b8d97d26d56aa3365ac099974cf5e630dc99ee359035f5930",
+      "trials": [
+        "trial_T20190906_221723_123986",
+        "trial_T20190907_210928_389193",
+        "trial_T20190908_113820_480741",
+        "trial_T20190909_040902_085686",
+        "trial_T20190909_073938_279211",
+        "trial_T20190909_150955_575706"
+      ]
+    },
+    {
+      "path": "..\\nlp-final-project-p3-reflection\\logs\\anchor-attempt1-bank-v1\\candidates.json",
+      "sha256": "fc5b118ce6083be95d1f27801dc506214a2ee472f53751c6529ce702e4080114",
+      "trials": [
+        "trial_T20190906_221723_123986",
+        "trial_T20190907_210928_389193",
+        "trial_T20190908_113820_480741",
+        "trial_T20190909_040902_085686",
+        "trial_T20190909_073938_279211",
+        "trial_T20190909_150955_575706"
+      ]
+    },
+    {
+      "path": "..\\nlp-final-project-p3-reflection\\logs\\anchor-attempt1-bank-v1\\manifest.json",
+      "sha256": "05b2ab3cb88462c25bd94c62a7dc44d17491c65ce2faa8aec73cc57ca2762d7b",
+      "trials": [
+        "trial_T20190906_221723_123986",
+        "trial_T20190907_210928_389193",
+        "trial_T20190908_113820_480741",
+        "trial_T20190909_040902_085686",
+        "trial_T20190909_073938_279211",
+        "trial_T20190909_150955_575706"
+      ]
+    },
+    {
+      "path": "..\\nlp-final-project-p3-reflection\\logs\\anchor-attempt1-bank-v1\\summary.json",
+      "sha256": "78c6aeeed6ff377611a154c22c0b0adc6baaef745a975a6bf00c2d648c0d7107",
+      "trials": [
+        "trial_T20190906_221723_123986",
+        "trial_T20190907_210928_389193",
+        "trial_T20190908_113820_480741",
+        "trial_T20190909_040902_085686",
+        "trial_T20190909_073938_279211",
+        "trial_T20190909_150955_575706"
+      ]
+    },
+    {
+      "path": "..\\nlp-final-project-p3-reflection\\logs\\anchor-attempt1-bank-v1\\trace.jsonl",
+      "sha256": "5c55606b9479c6d7a84a972ee9d3ad2db1afd7015d99ef5f2756c241b8075ec1",
+      "trials": [
+        "trial_T20190906_221723_123986",
+        "trial_T20190907_210928_389193",
+        "trial_T20190908_113820_480741",
+        "trial_T20190909_040902_085686",
+        "trial_T20190909_073938_279211",
+        "trial_T20190909_150955_575706"
+      ]
+    },
+    {
+      "path": "..\\nlp-final-project-p3-reflection\\logs\\anchor-attempt1-build\\bank.json",
+      "sha256": "11629728b261fa7539851bfce67dfd8f9637c3a1015d896824b1697e9df5c8db",
+      "trials": [
+        "trial_T20190906_221723_123986",
+        "trial_T20190907_210928_389193",
+        "trial_T20190908_113820_480741",
+        "trial_T20190909_040902_085686",
+        "trial_T20190909_073938_279211",
+        "trial_T20190909_150955_575706"
+      ]
+    },
+    {
+      "path": "..\\nlp-final-project-p3-reflection\\logs\\anchor-attempt1-build\\candidates.json",
+      "sha256": "cbc895aa17d23da414550470b525e06d54b288f86b3cbbd2a02226a92f1629f4",
+      "trials": [
+        "trial_T20190906_221723_123986",
+        "trial_T20190907_210928_389193",
+        "trial_T20190908_113820_480741",
+        "trial_T20190909_040902_085686",
+        "trial_T20190909_073938_279211",
+        "trial_T20190909_150955_575706"
+      ]
+    },
+    {
+      "path": "..\\nlp-final-project-p3-reflection\\logs\\anchor-attempt1-build\\manifest.json",
+      "sha256": "96e4a169472c04d65380c3c6b09ade92b8cdb1a4974d06b5f146ef3dbaddd88d",
+      "trials": [
+        "trial_T20190906_221723_123986",
+        "trial_T20190907_210928_389193",
+        "trial_T20190908_113820_480741",
+        "trial_T20190909_040902_085686",
+        "trial_T20190909_073938_279211",
+        "trial_T20190909_150955_575706"
+      ]
+    },
+    {
+      "path": "..\\nlp-final-project-p3-reflection\\logs\\anchor-attempt1-build\\summary.json",
+      "sha256": "9c27893009adc40291544a80712e3f21eea3f8dff7c8445e36be34da0ab5bb24",
+      "trials": [
+        "trial_T20190906_221723_123986",
+        "trial_T20190907_210928_389193",
+        "trial_T20190908_113820_480741",
+        "trial_T20190909_040902_085686",
+        "trial_T20190909_073938_279211",
+        "trial_T20190909_150955_575706"
+      ]
+    },
+    {
+      "path": "..\\nlp-final-project-p3-reflection\\logs\\anchor-attempt1-build\\trace.jsonl",
+      "sha256": "9e46f78b5a0a2db7daefe085867795aa942b5ada0ad74928a14b0939aaf5e391",
+      "trials": [
+        "trial_T20190906_221723_123986",
+        "trial_T20190907_210928_389193",
+        "trial_T20190908_113820_480741",
+        "trial_T20190909_040902_085686",
+        "trial_T20190909_073938_279211",
+        "trial_T20190909_150955_575706"
+      ]
+    },
+    {
+      "path": "..\\nlp-final-project-p3-reflection\\logs\\anchor-attempt1-dev\\comparison.json",
+      "sha256": "e81c3ea48b76b631a24b7e59f5d477e078a08315286e3005aad8fb5dc4e53df9",
+      "trials": [
+        "trial_T20190906_221723_123986",
+        "trial_T20190907_041436_588106",
+        "trial_T20190907_114323_767231",
+        "trial_T20190907_210928_389193",
+        "trial_T20190907_231206_512424",
+        "trial_T20190908_050633_745514",
+        "trial_T20190908_052232_887934",
+        "trial_T20190908_053153_077977",
+        "trial_T20190908_113820_480741",
+        "trial_T20190908_183331_203888",
+        "trial_T20190909_040902_085686",
+        "trial_T20190909_062333_424779",
+        "trial_T20190909_073938_279211",
+        "trial_T20190909_105559_983897",
+        "trial_T20190909_150955_575706",
+        "trial_T20190918_184236_557252"
+      ]
+    },
+    {
+      "path": "..\\nlp-final-project-p3-reflection\\logs\\anchor-attempt1-dev\\manifest.json",
+      "sha256": "8d939e9e8136636a44425db2b6c6af03c7306f1e322eb1aaec3a22f322a84c7e",
+      "trials": [
+        "trial_T20190906_221723_123986",
+        "trial_T20190907_041436_588106",
+        "trial_T20190907_114323_767231",
+        "trial_T20190907_210928_389193",
+        "trial_T20190907_231206_512424",
+        "trial_T20190908_050633_745514",
+        "trial_T20190908_052232_887934",
+        "trial_T20190908_053153_077977",
+        "trial_T20190908_113820_480741",
+        "trial_T20190908_183331_203888",
+        "trial_T20190909_040902_085686",
+        "trial_T20190909_062333_424779",
+        "trial_T20190909_073938_279211",
+        "trial_T20190909_105559_983897",
+        "trial_T20190909_150955_575706",
+        "trial_T20190918_184236_557252"
+      ]
+    },
+    {
+      "path": "..\\nlp-final-project-p3-reflection\\logs\\anchor-attempt1-dev\\summary.json",
+      "sha256": "a11886675df047d6aeb01fbf9b1d69e184aba70dcd64ca6087be1bd8a09fe615",
+      "trials": [
+        "trial_T20190907_041436_588106",
+        "trial_T20190907_114323_767231",
+        "trial_T20190907_231206_512424",
+        "trial_T20190908_050633_745514",
+        "trial_T20190908_052232_887934",
+        "trial_T20190908_053153_077977",
+        "trial_T20190908_183331_203888",
+        "trial_T20190909_062333_424779",
+        "trial_T20190909_105559_983897",
+        "trial_T20190918_184236_557252"
+      ]
+    },
+    {
+      "path": "..\\nlp-final-project-p3-reflection\\logs\\anchor-attempt1-dev\\trace.jsonl",
+      "sha256": "ee76cb8e05e55ee40bfd5937d75d265f02e5101e1aeda841de6b846541f40ad8",
+      "trials": [
+        "trial_T20190907_041436_588106",
+        "trial_T20190907_114323_767231",
+        "trial_T20190907_231206_512424",
+        "trial_T20190908_050633_745514",
+        "trial_T20190908_052232_887934",
+        "trial_T20190908_053153_077977",
+        "trial_T20190908_183331_203888",
+        "trial_T20190909_062333_424779",
+        "trial_T20190909_105559_983897",
+        "trial_T20190918_184236_557252"
+      ]
+    },
+    {
+      "path": "..\\nlp-final-project-p3-reflection\\logs\\anchor-attempt1-frozen\\bank.json",
+      "sha256": "1c562271fb4b26960ff1ec1268f55349fd7ac53c8b2df8efc6b1b086b509b8e6",
+      "trials": [
+        "trial_T20190906_221723_123986",
+        "trial_T20190907_210928_389193",
+        "trial_T20190908_113820_480741",
+        "trial_T20190909_040902_085686",
+        "trial_T20190909_073938_279211",
+        "trial_T20190909_150955_575706"
+      ]
+    },
+    {
+      "path": "..\\nlp-final-project-p3-reflection\\logs\\anchor-attempt1-frozen\\candidates.json",
+      "sha256": "c17d40c14803c9484bf2b6b45d3b76a772cbe4383b5664e2352e95052bb6ca89",
+      "trials": [
+        "trial_T20190906_221723_123986",
+        "trial_T20190907_210928_389193",
+        "trial_T20190908_113820_480741",
+        "trial_T20190909_040902_085686",
+        "trial_T20190909_073938_279211",
+        "trial_T20190909_150955_575706"
+      ]
+    },
+    {
+      "path": "..\\nlp-final-project-p3-reflection\\logs\\anchor-attempt1-frozen\\manifest.json",
+      "sha256": "f18b3f5ae480e0db94c63ad0417ac48a3b24fff52197e87eb28bd907b0c6e88d",
+      "trials": [
+        "trial_T20190906_221723_123986",
+        "trial_T20190907_210928_389193",
+        "trial_T20190908_113820_480741",
+        "trial_T20190909_040902_085686",
+        "trial_T20190909_073938_279211",
+        "trial_T20190909_150955_575706"
+      ]
+    },
+    {
+      "path": "..\\nlp-final-project-p3-reflection\\logs\\anchor-attempt1-frozen\\summary.json",
+      "sha256": "5b1c100ff433bdfb01470af8cc3e9a839a93762c7205a1bb8abe11db37560894",
+      "trials": [
+        "trial_T20190906_221723_123986",
+        "trial_T20190907_210928_389193",
+        "trial_T20190908_113820_480741",
+        "trial_T20190909_040902_085686",
+        "trial_T20190909_073938_279211",
+        "trial_T20190909_150955_575706"
+      ]
+    },
+    {
+      "path": "..\\nlp-final-project-p3-reflection\\logs\\anchor-attempt1-frozen\\trace.jsonl",
+      "sha256": "7311a33ff77a9e7536500b1bc5e5a17c9905d707d3b09d7af797f6c3c7a37b33",
+      "trials": [
+        "trial_T20190906_221723_123986",
+        "trial_T20190907_210928_389193",
+        "trial_T20190908_113820_480741",
+        "trial_T20190909_040902_085686",
+        "trial_T20190909_073938_279211",
+        "trial_T20190909_150955_575706"
+      ]
+    },
+    {
+      "path": "..\\nlp-final-project-p3-reflection\\logs\\anchor-attempt1-pilot\\manifest.json",
+      "sha256": "e46134a1807845bfd612aa58deff1baa63cfd0da5eab1a2dad35ef6c39ded591",
+      "trials": [
+        "trial_T20190906_221723_123986",
+        "trial_T20190907_210928_389193",
+        "trial_T20190908_050633_745514",
+        "trial_T20190908_113820_480741",
+        "trial_T20190909_040902_085686",
+        "trial_T20190909_073938_279211",
+        "trial_T20190909_105559_983897",
+        "trial_T20190909_150955_575706"
+      ]
+    },
+    {
+      "path": "..\\nlp-final-project-p3-reflection\\logs\\anchor-attempt1-pilot\\summary.json",
+      "sha256": "b141f2b863770ff0ccf93307c09d5cc26799b57f19382af397f9a9766b0c0217",
+      "trials": [
+        "trial_T20190908_050633_745514",
+        "trial_T20190909_105559_983897"
+      ]
+    },
+    {
+      "path": "..\\nlp-final-project-p3-reflection\\logs\\anchor-attempt1-pilot\\trace.jsonl",
+      "sha256": "7a0453531b17bddaa0266dfc1221d91cbe69ebf2cd22820fecd6a0e835d4667c",
+      "trials": [
+        "trial_T20190908_050633_745514",
+        "trial_T20190909_105559_983897"
+      ]
+    },
+    {
+      "path": "..\\nlp-final-project-p3-reflection\\logs\\anchor-attempt1-probe\\manifest.json",
+      "sha256": "28c47b0a64f5e93f94c04f211acdc01c596facaeeba4e6a2fe745e4d585d9a04",
+      "trials": [
+        "trial_T20190906_221723_123986",
+        "trial_T20190907_210928_389193",
+        "trial_T20190908_113820_480741",
+        "trial_T20190909_040902_085686",
+        "trial_T20190909_073938_279211",
+        "trial_T20190909_150955_575706"
+      ]
+    },
+    {
+      "path": "..\\nlp-final-project-p3-reflection\\logs\\development-seven-arm-20261123\\comparison.json",
+      "sha256": "ec71c73e98706821e13fa430d7377b90bfc4379cb9a829305b170d5c2851fb27",
+      "trials": [
+        "trial_T20190907_041436_588106",
+        "trial_T20190907_114323_767231",
+        "trial_T20190907_231206_512424",
+        "trial_T20190908_050633_745514",
+        "trial_T20190908_053153_077977",
+        "trial_T20190908_183331_203888",
+        "trial_T20190909_062333_424779",
+        "trial_T20190909_105559_983897"
+      ]
+    },
+    {
+      "path": "..\\nlp-final-project-p3-reflection\\logs\\development-seven-arm-20261123\\task_results.jsonl",
+      "sha256": "199e0941ab052cc3487d5cad3dc92c029f677d333b19d9800020c29b8bbabbcf",
+      "trials": [
+        "trial_T20190907_041436_588106",
+        "trial_T20190907_114323_767231",
+        "trial_T20190907_231206_512424",
+        "trial_T20190908_050633_745514",
+        "trial_T20190908_052232_887934",
+        "trial_T20190908_053153_077977",
+        "trial_T20190908_183331_203888",
+        "trial_T20190909_062333_424779",
+        "trial_T20190909_105559_983897",
+        "trial_T20190918_184236_557252"
+      ]
+    },
+    {
+      "path": "..\\nlp-final-project-p3-reflection\\logs\\hands-on-manual-01\\manifest.json",
+      "sha256": "f51ca1f11d2650b1739ea297518759e1e986d6469ac10c94958b0a8976179611",
+      "trials": [
+        "trial_T20190908_050633_745514"
+      ]
+    },
+    {
+      "path": "..\\nlp-final-project-p3-reflection\\logs\\hands-on-manual-01\\trace.jsonl",
+      "sha256": "14c735b0ee065bc93f4c8eabcc79907aae854cefd7c93ef27247afc26661638f",
+      "trials": [
+        "trial_T20190908_050633_745514"
+      ]
+    },
+    {
+      "path": "..\\nlp-final-project-p3-reflection\\logs\\m1-dev-ab-20261110\\manifest.json",
+      "sha256": "0323d88d3f73d2891c6e6e8e7f7141bba9889e1d24d4160f048de098e9ebb695",
+      "trials": [
+        "trial_T20190907_041436_588106",
+        "trial_T20190907_114323_767231",
+        "trial_T20190907_231206_512424",
+        "trial_T20190908_050633_745514",
+        "trial_T20190908_052232_887934",
+        "trial_T20190908_053153_077977",
+        "trial_T20190908_183331_203888",
+        "trial_T20190909_062333_424779",
+        "trial_T20190909_105559_983897",
+        "trial_T20190918_184236_557252"
+      ]
+    },
+    {
+      "path": "..\\nlp-final-project-p3-reflection\\logs\\m1-dev-ab-20261110\\summary.json",
+      "sha256": "715df17bbb1dda3450ec1af3a4f41af7c8f4352dce3a0971d22e7abfa93aa5ba",
+      "trials": [
+        "trial_T20190907_041436_588106",
+        "trial_T20190907_114323_767231",
+        "trial_T20190907_231206_512424",
+        "trial_T20190908_050633_745514",
+        "trial_T20190908_052232_887934",
+        "trial_T20190908_053153_077977",
+        "trial_T20190908_183331_203888",
+        "trial_T20190909_062333_424779",
+        "trial_T20190909_105559_983897",
+        "trial_T20190918_184236_557252"
+      ]
+    },
+    {
+      "path": "..\\nlp-final-project-p3-reflection\\logs\\m1-dev-ab-20261110\\trace.jsonl",
+      "sha256": "5785a47257783ebaab2106b8323a4cad03d6bb476b6acb2be70ccbd0f9bb2235",
+      "trials": [
+        "trial_T20190907_041436_588106",
+        "trial_T20190907_114323_767231",
+        "trial_T20190907_231206_512424",
+        "trial_T20190908_050633_745514",
+        "trial_T20190908_052232_887934",
+        "trial_T20190908_053153_077977",
+        "trial_T20190908_183331_203888",
+        "trial_T20190909_062333_424779",
+        "trial_T20190909_105559_983897",
+        "trial_T20190918_184236_557252"
+      ]
+    },
+    {
+      "path": "..\\nlp-final-project-p3-reflection\\logs\\m1-manual-20261110\\manifest.json",
+      "sha256": "1abe0eb5b347ba93d8395f784aa5bda39b9a423ceba5ee4c65d678d5cda7d900",
+      "trials": [
+        "trial_T20190908_050633_745514"
+      ]
+    },
+    {
+      "path": "..\\nlp-final-project-p3-reflection\\logs\\m1-manual-20261110\\trace.jsonl",
+      "sha256": "9c21f813893dfaae89d88b9699eca48e917f31fd687e4a3c9b2e3fc47199ac74",
+      "trials": [
+        "trial_T20190908_050633_745514"
+      ]
+    },
+    {
+      "path": "..\\nlp-final-project-p3-reflection\\logs\\m1-manual-clean-20261110\\manifest.json",
+      "sha256": "a49dcb15f67d1ece3d20d77a2602a261e0dce83aae349cf546834fd9efb5e88a",
+      "trials": [
+        "trial_T20190908_050633_745514"
+      ]
+    },
+    {
+      "path": "..\\nlp-final-project-p3-reflection\\logs\\m1-manual-clean-20261110\\trace.jsonl",
+      "sha256": "9c21f813893dfaae89d88b9699eca48e917f31fd687e4a3c9b2e3fc47199ac74",
+      "trials": [
+        "trial_T20190908_050633_745514"
+      ]
+    },
+    {
+      "path": "..\\nlp-final-project-p3-reflection\\logs\\m1-pilot-20261110\\manifest.json",
+      "sha256": "1f79871c2fff4a120aa6c5af56199397a56b3dbb2ac021943c279f9d42f2a451",
+      "trials": [
+        "trial_T20190908_050633_745514",
+        "trial_T20190909_105559_983897"
+      ]
+    },
+    {
+      "path": "..\\nlp-final-project-p3-reflection\\logs\\m1-pilot-20261110\\summary.json",
+      "sha256": "71dc49de944d04425e327d0a78adacd882c2c993c776ec1ac45da172e65d6ac0",
+      "trials": [
+        "trial_T20190908_050633_745514",
+        "trial_T20190909_105559_983897"
+      ]
+    },
+    {
+      "path": "..\\nlp-final-project-p3-reflection\\logs\\m1-pilot-20261110\\trace.jsonl",
+      "sha256": "1fef09255bc7c5e88636d4b1670106e0b91f320f7963a72d05e0d6464ab3412d",
+      "trials": [
+        "trial_T20190908_050633_745514",
+        "trial_T20190909_105559_983897"
+      ]
+    },
+    {
+      "path": "..\\nlp-final-project-p3-reflection\\logs\\m1-pilot-raw-20261110\\manifest.json",
+      "sha256": "8f6dcac1a4d431a9d49d9867df3c70aba213b7dfc8761d68d5fb90b594fc13e8",
+      "trials": [
+        "trial_T20190908_050633_745514",
+        "trial_T20190909_105559_983897"
+      ]
+    },
+    {
+      "path": "..\\nlp-final-project-p3-reflection\\logs\\m1-pilot-raw-20261110\\summary.json",
+      "sha256": "80924214c0374bb0fa5f65e86e1929df601aaf64c337c077e7f920ab3ff7e836",
+      "trials": [
+        "trial_T20190908_050633_745514",
+        "trial_T20190909_105559_983897"
+      ]
+    },
+    {
+      "path": "..\\nlp-final-project-p3-reflection\\logs\\m1-pilot-raw-20261110\\trace.jsonl",
+      "sha256": "a13cdc9b6d26c473242983fcd5c0fdd447854c39c3ac51c9725e355c9cb91b91",
+      "trials": [
+        "trial_T20190908_050633_745514",
+        "trial_T20190909_105559_983897"
+      ]
+    },
+    {
+      "path": "..\\nlp-final-project-p3-reflection\\logs\\manual-explore-01\\manifest.json",
+      "sha256": "8cde7efd3074742b09cee6af772753845e4988456bd34da745734a7da7d632cd",
+      "trials": [
+        "trial_T20190908_050633_745514"
+      ]
+    },
+    {
+      "path": "..\\nlp-final-project-p3-reflection\\logs\\manual-explore-01\\trace.jsonl",
+      "sha256": "139ba93ac55dd98af72f986571fa7af0ea09bb057b83e9f8135d1cccf03e1de6",
+      "trials": [
+        "trial_T20190908_050633_745514"
+      ]
+    },
+    {
+      "path": "..\\nlp-final-project-p3-reflection\\logs\\manual-explore-02\\manifest.json",
+      "sha256": "cb02a5a0b8ff2af9c85c3a2fa145e165b8edf9b3c003d4ced90af35ba2559587",
+      "trials": [
+        "trial_T20190908_050633_745514"
+      ]
+    },
+    {
+      "path": "..\\nlp-final-project-p3-reflection\\logs\\manual-explore-02\\trace.jsonl",
+      "sha256": "685b15fcb9341ad0cdf11b2bc241e3e1eddbbcee3c5e2d0de54889e508cb4459",
+      "trials": [
+        "trial_T20190908_050633_745514"
+      ]
+    },
+    {
+      "path": "..\\nlp-final-project-p3-reflection\\logs\\manual-trial-03\\manifest.json",
+      "sha256": "e75a6e9c9348f01475698e7945e0393c1a1deb1edf9e743b19ff18550d7ab850",
+      "trials": [
+        "trial_T20190908_050633_745514"
+      ]
+    },
+    {
+      "path": "..\\nlp-final-project-p3-reflection\\logs\\manual-trial-03\\trace.jsonl",
+      "sha256": "f44f816a8e863926cd8bb9ab03d4c3323d7f4c7698f4bb2987642c9b75d3bbb2",
+      "trials": [
+        "trial_T20190908_050633_745514"
+      ]
+    },
+    {
+      "path": "..\\nlp-final-project-p3-reflection\\logs\\manual-verified-04\\manifest.json",
+      "sha256": "6381c7027de7c28ebf892af3627a9e1973bc114366a03952488bfadf26d3f854",
+      "trials": [
+        "trial_T20190908_050633_745514"
+      ]
+    },
+    {
+      "path": "..\\nlp-final-project-p3-reflection\\logs\\manual-verified-04\\trace.jsonl",
+      "sha256": "9c21f813893dfaae89d88b9699eca48e917f31fd687e4a3c9b2e3fc47199ac74",
+      "trials": [
+        "trial_T20190908_050633_745514"
+      ]
+    },
+    {
+      "path": "..\\nlp-final-project-p3-reflection\\logs\\priority-s1s4-20261123-merged\\summary.json",
+      "sha256": "5927a1e1173b147c9ece3898f7193e91cb5c3dbc33cf89b59d177b6ef278099f",
+      "trials": [
+        "trial_T20190907_041436_588106",
+        "trial_T20190907_114323_767231",
+        "trial_T20190907_231206_512424",
+        "trial_T20190908_050633_745514",
+        "trial_T20190908_052232_887934",
+        "trial_T20190908_053153_077977",
+        "trial_T20190908_183331_203888",
+        "trial_T20190909_062333_424779",
+        "trial_T20190909_105559_983897",
+        "trial_T20190918_184236_557252"
+      ]
+    },
+    {
+      "path": "..\\nlp-final-project-p3-reflection\\logs\\priority-s1s4-20261123-merged\\task_results.jsonl",
+      "sha256": "1c3abb47804dcf285dd2e56baa20ab504c0ca3b884ecd46eadae96e60741b3bd",
+      "trials": [
+        "trial_T20190907_041436_588106",
+        "trial_T20190907_114323_767231",
+        "trial_T20190907_231206_512424",
+        "trial_T20190908_050633_745514",
+        "trial_T20190908_052232_887934",
+        "trial_T20190908_053153_077977",
+        "trial_T20190908_183331_203888",
+        "trial_T20190909_062333_424779",
+        "trial_T20190909_105559_983897",
+        "trial_T20190918_184236_557252"
+      ]
+    },
+    {
+      "path": "..\\p3-clean-checkout\\configs\\task_registry.json",
+      "sha256": "1550dd135b95c24678ac4d6ddbe3bdfc5d8b7f34f80c10c5f16c1fc9297c256e",
+      "trials": [
+        "trial_T20190907_041436_588106",
+        "trial_T20190907_051013_060265",
+        "trial_T20190907_083346_800823",
+        "trial_T20190907_114323_767231",
+        "trial_T20190907_133953_562557",
+        "trial_T20190907_231206_512424",
+        "trial_T20190908_020029_636862",
+        "trial_T20190908_020048_814402",
+        "trial_T20190908_032518_891433",
+        "trial_T20190908_032543_712058",
+        "trial_T20190908_050633_745514",
+        "trial_T20190908_052232_887934",
+        "trial_T20190908_053153_077977",
+        "trial_T20190908_091835_825830",
+        "trial_T20190908_113432_673307",
+        "trial_T20190908_113610_425142",
+        "trial_T20190908_114340_674467",
+        "trial_T20190908_125200_737896",
+        "trial_T20190908_142046_281296",
+        "trial_T20190908_145050_918567",
+        "trial_T20190908_183331_203888",
+        "trial_T20190908_205221_748352",
+        "trial_T20190908_205246_776817",
+        "trial_T20190908_222917_366542",
+        "trial_T20190908_225359_617900",
+        "trial_T20190909_021650_880235",
+        "trial_T20190909_062333_424779",
+        "trial_T20190909_064053_839817",
+        "trial_T20190909_064309_357168",
+        "trial_T20190909_081746_857594",
+        "trial_T20190909_102644_926781",
+        "trial_T20190909_102710_795182",
+        "trial_T20190909_105559_983897",
+        "trial_T20190909_110347_624008",
+        "trial_T20190909_110445_675754",
+        "trial_T20190909_121710_650938",
+        "trial_T20190909_174807_646433",
+        "trial_T20190912_221141_608117",
+        "trial_T20190918_154326_823501",
+        "trial_T20190918_184236_557252"
+      ]
+    },
+    {
+      "path": "..\\p3-clean-checkout\\logs\\clean-check\\manifest.json",
+      "sha256": "30ca667ba434566e8f9813b4bd5b1b87f0becbfb82ca332876ddceb00102a8e5",
+      "trials": [
+        "trial_T20190908_050633_745514"
+      ]
+    },
+    {
+      "path": "..\\p3-clean-checkout\\logs\\clean-check\\trace.jsonl",
+      "sha256": "9c21f813893dfaae89d88b9699eca48e917f31fd687e4a3c9b2e3fc47199ac74",
+      "trials": [
+        "trial_T20190908_050633_745514"
+      ]
+    },
+    {
+      "path": "..\\..\\outputs\\course-requirements-review\\sample-size-diagnostic.json",
+      "sha256": "9d4ab57e3a53c51bf7f978c2a14097b4a64197faef6c94d4df31736d967c960d",
+      "trials": [
+        "trial_T20190907_041436_588106",
+        "trial_T20190907_114323_767231",
+        "trial_T20190907_231206_512424",
+        "trial_T20190908_050633_745514",
+        "trial_T20190908_052232_887934",
+        "trial_T20190908_053153_077977",
+        "trial_T20190908_183331_203888",
+        "trial_T20190909_062333_424779",
+        "trial_T20190909_105559_983897",
+        "trial_T20190918_184236_557252"
+      ]
+    }
+  ],
+  "rule": "Conservatively exclude every trial ID mentioned in project code/config/docs/prompts/logs/helpers; no outcome filtering."
+}

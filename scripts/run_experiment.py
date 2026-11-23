@@ -19,7 +19,11 @@ from src.reflection.instructions import reflection_prompt
 
 
 CONDITIONS = ("A", "B", "S1", "S2", "S3", "S4", "S5")
-SEEDS = (4051, 4052)
+SUPPLEMENTARY = os.getenv("P3_EXPERIMENT") == "supplementary-4053"
+SEEDS = (4053,) if SUPPLEMENTARY else (4051, 4052)
+TASK_COUNT = 20 if SUPPLEMENTARY else 10
+PROTOCOL_PATH = ROOT / ("experiments/supplementary_4053/protocol.json" if SUPPLEMENTARY else "configs/seven_arm.json")
+REGISTRY_PATH = ROOT / ("experiments/supplementary_4053/registry.json" if SUPPLEMENTARY else "configs/task_registry.json")
 COST_KEYS = ("model_calls", "input_tokens", "output_tokens", "inference_seconds", "env_actions")
 AUDIT_FIELDS = {
     "reset": ("initial_state_sha256", "memory"),
@@ -39,16 +43,23 @@ def read_frozen(path, expected):
 
 
 def load_inputs():
-    protocol = json.loads((ROOT / "configs/seven_arm.json").read_bytes())
+    protocol = json.loads(PROTOCOL_PATH.read_bytes())
     if tuple(protocol["conditions"]) != CONDITIONS or tuple(protocol["seeds"]) != SEEDS:
-        raise ValueError("Expected all seven conditions and frozen seeds 4051/4052")
+        raise ValueError(f"Expected all seven conditions and frozen seeds {SEEDS}")
     config = json.loads(read_frozen(ROOT / "configs/baseline.json", protocol["baseline_sha256"]))
-    registry = json.loads(read_frozen(ROOT / "configs/task_registry.json", protocol["registry_sha256"]))
+    registry = json.loads(read_frozen(REGISTRY_PATH, protocol["registry_sha256"]))
     if (version("alfworld"), version("textworld")) != (config["alfworld"]["version"], config["alfworld"]["textworld"]):
         raise ValueError("Install the pinned ALFWorld/TextWorld versions")
     tasks = registry["development"]
-    if len(tasks) != 10 or len(set(tasks)) != 10 or set(tasks) & set(registry["held_out"]):
-        raise ValueError("Expected ten unique development tasks, disjoint from held_out")
+    if len(tasks) != TASK_COUNT or len(set(tasks)) != TASK_COUNT or set(tasks) & set(registry["held_out"]):
+        raise ValueError(f"Expected {TASK_COUNT} unique development tasks, disjoint from held_out")
+    if SUPPLEMENTARY:
+        selection = json.loads(read_frozen(ROOT / "experiments/supplementary_4053/selection.json", protocol["selection_sha256"]))
+        original = json.loads((ROOT / "configs/task_registry.json").read_bytes())
+        if (tasks != selection['tasks'] or registry['held_out'] != original['held_out'] or
+                set(tasks) & set(original['development']) or
+                any(t.split('/')[-1] in registry['excluded_trial_ids'] or '/valid_seen/' not in t for t in tasks)):
+            raise ValueError("Supplementary task overlap or selection drift")
     instructions = {condition: read_frozen(ROOT / item["file"], item["sha256"]).strip() if item else None
                     for condition, item in protocol["conditions"].items()}
     assets = reflexion_assets(config)
@@ -63,6 +74,8 @@ def load_inputs():
         if not json.loads(game.read_bytes())["solvable"]:
             raise ValueError(f"Unsolvable task: {task_id}")
         games[task_id] = game
+        if SUPPLEMENTARY and sha256(game.read_bytes()) != selection['game_sha256'][task_id]:
+            raise ValueError(f"Supplementary task hash mismatch: {task_id}")
     if {game.parts[-3].split("-")[0] for game in games.values()} != set(PREFIXES):
         raise ValueError("Development tasks must cover all six task types")
     return protocol, config, tasks, instructions, games, assets
@@ -70,7 +83,9 @@ def load_inputs():
 
 def make_schedule(tasks, seeds, conditions=CONDITIONS, task_offset=0):
     if not seeds or list(seeds) != [seed for seed in SEEDS if seed in seeds]:
-        raise ValueError("Seeds must be a nonempty ordered subset of 4051, 4052")
+        raise ValueError(f"Seeds must be a nonempty ordered subset of {SEEDS}")
+    if SUPPLEMENTARY and tuple(conditions) != CONDITIONS:
+        raise ValueError("Supplementary batches require all seven conditions")
     if tuple(conditions) != tuple(c for c in CONDITIONS if c in conditions) or not {'A', 'B'} <= set(conditions):
         raise ValueError("Conditions must be an ordered unique subset including A and B")
     schedule = []
@@ -150,7 +165,8 @@ def execute(run, server, seeds, inputs, smoke=False, task_index=None, conditions
         "runtime_sha256": os.getenv("P3_RUNTIME_SHA256"), "gpu_type_driver": os.getenv("P3_GPU_TYPE_DRIVER"),
         "run_id": run.name, "git_commit": git("rev-parse", "HEAD"),
         "git_dirty": bool(git("status", "--porcelain")), "protocol": protocol, "config": config,
-        "protocol_sha256": sha256((ROOT / "configs/seven_arm.json").read_text(encoding="utf-8").encode()),
+        "protocol_sha256": sha256(PROTOCOL_PATH.read_text(encoding="utf-8").encode()),
+        "experiment_label": "supplementary-development" if SUPPLEMENTARY else "original-development",
         "instructions": instructions, "schedule": schedule,
         "game_sha256": {t: sha256(g.read_bytes()) for t, g in games.items()},
         "python": sys.version, "platform": platform.platform(), "hostname": platform.node(),
@@ -237,12 +253,14 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--check-only", action="store_true", help="Check frozen inputs without any model requests")
     parser.add_argument("--smoke", action="store_true", help="Separate smoke run: first development task, all groups, seed 4051")
-    parser.add_argument("--task-index", type=int, choices=range(10), help="One development task per short job; requires one seed")
+    parser.add_argument("--task-index", type=int, choices=range(TASK_COUNT), help="One development task per short job; requires one seed")
     parser.add_argument("--conditions", nargs="+", choices=CONDITIONS, default=list(CONDITIONS))
     parser.add_argument("--run-id", help="New directory under logs/; never overwritten")
     parser.add_argument("--seeds", type=int, nargs="+", choices=SEEDS)
     parser.add_argument("--server", default="http://127.0.0.1:8080")
     args = parser.parse_args()
+    if SUPPLEMENTARY and args.smoke:
+        parser.error("Supplementary first shard is the running check; no separate smoke")
     args.seeds = args.seeds or ([4051] if args.smoke else list(SEEDS))
     if args.smoke and args.seeds != [4051]:
         parser.error("--smoke uses only seed 4051")

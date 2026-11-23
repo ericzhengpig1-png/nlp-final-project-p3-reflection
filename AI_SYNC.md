@@ -1,5 +1,17 @@
 # P3 项目交接
 
+## 2026-11-23 22:34 · 20 道新题的补充开发实验已启动
+
+隔离分支 `exp/supplementary-dev-4053`，学校独立工作区 `/hpc/home/aiaa4051_112/p3-work/supplementary-4053`，实验代码冻结 `c19d8d0d7c9f0e6cb8aa097d9ad688618c117118`。原学校 `repo` 仍为 `0e2e1ae`，原代码、配置和结果保留。后续文档提交不拉入运行目录。
+
+- 20 道全新 valid_seen、种子 4053，每题七组 A/B/S1–S5，共 140 单元。原 10 道开发题和 30 道留出题不运行。六类配额 4/4/3/3/3/3：清洗和灯下观察各 4，其余各 3。
+- 扫描本地 191、学校 544 个文本材料，排除全部 46 个历史出现的 trial ID；140 个可解 valid_seen 中剩余 130 个。按固定 SHA256 排序抽题，清单和规则已在运行前冻结于 `experiments/supplementary_4053/registry.json`、`selection.json`，不按结果替换。
+- GPU **30640–30659**：20 批串行成功依赖，每批一道题、七组；ai、A30 MIG 2g.12gb、4 CPU、16GB 主机内存、10 分钟上限。首批 30640 已 RUN，承担运行检查；失败后续不会继续。CPU **30660**：依赖 30659 成功，自动完整性检查和本轮配对报告。
+- 补充实验 7 项无模型检查、原入口 33 项回归检查通过。20 道题全部七组的首次请求和空记忆一致；模型/提示词/采样/预算/运行库与上一轮核对一致。仅任务清单、种子变化。
+- 新日志前缀 `logs/supplementary-dev-4053-20261123`；最终 `-merged/report.md`、`comparison.json` 包含首次/三次内/恢复率、调用/token/推理时间、逐作业时间、相对 A/B 逐题得失及案例证据。不混入旧轮结果，不归因于种子，不称课程最终留出评测。
+
+按旧轮 180 单元实际 123.9 分钟估计，这轮约 90–120 分钟，排队另计；20 批资源时限合计 200 MIG 实例分钟。提交记录见[学校实验记录](docs/reports/school-priority-launch-2026-11-23.md)。
+
 维护两人的最新进展和下一棒。项目任务、分工和决策以共享 Notion 为准，工程实现以 GitHub 代码、Issue 和 PR 为准。
 
 文档入口：[分类索引](docs/README.md) · [研究执行计划](docs/planning/plan.md) · [学校 GPU 流程](docs/experiments/school-gpu-runbook.md) · [就绪检查报告](docs/reports/seven-arm-readiness.md)。历史实验结论保持原记录。

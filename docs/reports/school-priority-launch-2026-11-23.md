@@ -1,4 +1,33 @@
-# 学校开发筛选：两轮短作业提交记录
+# 学校开发实验：短作业提交记录
+
+## 22:34 更新：20 道全新任务的补充开发实验
+
+用户指定 20 个未使用过的 valid_seen 任务、4053、七组、140 单元。独立分支 `exp/supplementary-dev-4053`，学校独立目录 `/hpc/home/aiaa4051_112/p3-work/supplementary-4053`。运行代码冻结为 `c19d8d0d7c9f0e6cb8aa097d9ad688618c117118`，原 `/p3-work/repo` 不变。
+
+| 作业号 | 内容 | 资源 | 依赖 |
+| --- | --- | --- | --- |
+| 30640 | 固定题目索引 0，A/B/S1–S5，4053；首批运行检查 | ai、A30 MIG 2g.12gb、4 CPU、16GB、10 分钟 | 无 |
+| 30641–30659 | 索引 1–19，每批一道题、七组、4053 | 同上 | 上一批成功 |
+| 30660 | 完整性审计、本轮七组配对汇总、案例与成本报告 | normal、1 CPU、4GB、5 分钟 | 30659 成功 |
+
+22:34 提交后首批已 RUN，后续按成功依赖等待。固定 campaign 名称与原子目录创建防止重复提交；无额外冒烟、无旧题模型复跑、无留出模型调用。旧入口回归测试仅使用预设响应，无模型推理。
+
+抽取前扫描本地 191 个、学校 544 个文本材料，记录文件哈希与全部 46 个出现过的 trial ID，保守排除。140 道可解 valid_seen 排除 10 道历史题后剩 130 道。采用 `supplementary-development-4053-v1` 固定标签：按 SHA256(tag:type:type_name) 排六类，前两类取 4 道、余下各 3 道；类内按 SHA256(tag:task:canonical_task_id) 取前 quota 道，再交错排列。只按数据集 solvable 标志过滤，不按结果、参考动作长度或难度筛选。清洗、灯下观察各 4 道，其余四类各 3 道。
+
+冻结证据：[任务清单](../../experiments/supplementary_4053/registry.json)、[抽取规则与数据哈希](../../experiments/supplementary_4053/selection.json)、[协议](../../experiments/supplementary_4053/protocol.json)、同目录 exposure-local/school.json。原 10 道开发题、30 道留出题与选中任务交集为零。
+
+学校检查通过：补充实验 7 项检查（包含 20 道题 × 七组首次请求/初始状态/空记忆一致，140 单元合并，缺失/重复/首轮漂移拒绝，20 批依赖与重复提交拒绝），旧入口 33 项回归。源 `src/`、提示词、run_baseline/serve_model、原三份配置、运行库组合哈希均与旧轮相同。预检不调用模型。
+
+学校日志（相对上述新工作区）：
+
+- `logs/preflight-4053/`：预检、固定 140 单元 schedule、测试与提交输出。
+- `logs/supplementary-dev-4053-20261123-submission/`：jobs.tsv、提交代码 SHA、汇总作业号。
+- `logs/supplementary-dev-4053-20261123-s4053-t0/` 至 `t19/`：逐批 manifest、trace.jsonl、task_results.jsonl、summary.json；对应 `-job/` 含 GPU、server、experiment 日志和实际运行时长。
+- `logs/supplementary-dev-4053-20261123-merged/`：全部完成后生成 report.md、comparison.json、task_results.jsonl、summary.json、manifest.json。
+
+报告仅比较本轮配对：首次成功率、三次内成功率、首败恢复率，以及调用、输入输出 token、推理秒、20 个 GPU 作业实际秒数。逐题保留 S1–S5 对 A/B 的改善、退步、成本差异；每个候选按冻结题序选择相对 B 的首个改善与首个退步案例，附原始反思和轨迹行号。七组共享作业时间不伪分摊为组别卡时。标签为“补充开发实验”，不混算旧轮、不把差异直接归因于种子、不代替最终留出。
+
+旧轮实际 180 单元的 MIG 作业时间为 123.9 分钟，因此本轮先估计 90–120 分钟，排队另计；20 个短作业时限合计 200 MIG 实例分钟，实际计费仍以学校记录为准。所有推理由学校调度器后台执行，关闭 SSH 不影响运行。
 
 ## 15:09–15:16 更新：补跑 A/B/S2/S3/S5
 

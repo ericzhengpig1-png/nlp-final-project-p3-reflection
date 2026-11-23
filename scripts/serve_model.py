@@ -14,6 +14,9 @@ def main():
     parser.add_argument("--weights", type=Path, help="Use a verified GGUF outside models/")
     parser.add_argument("--port", type=int, default=8080)
     args = parser.parse_args()
+    threads = int(os.environ.get("OMP_NUM_THREADS", "4"))
+    if threads < 1:
+        parser.error("OMP_NUM_THREADS must be positive")
     if not 1 <= args.port <= 65535:
         parser.error("--port must be between 1 and 65535")
     model = json.loads((ROOT / "configs/baseline.json").read_bytes())["model"]
@@ -31,6 +34,7 @@ def main():
         "--host", "127.0.0.1", "--port", str(args.port), "--device", args.device,
         "--n-gpu-layers", "999", "--fit", "off", "--ctx-size", str(model["context_tokens"]),
         "--parallel", "1", "--no-context-shift", "--no-cache-prompt",
+        "--threads", str(threads), "--threads-batch", str(threads),
     ]
     if os.name == "posix":
         os.execv(binary, command)

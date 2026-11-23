@@ -17,7 +17,9 @@ P3_PYTHON="${P3_PYTHON:-$ROOT/.venv/bin/python}"
 : "${P3_RUN_ID:?Set a new P3_RUN_ID}"
 [[ "$P3_RUN_ID" =~ ^[a-zA-Z0-9_-]+$ ]] || { echo 'Invalid P3_RUN_ID' >&2; exit 2; }
 [[ -x "$P3_PYTHON" && -x "$P3_SERVER" ]] || { echo 'Missing Python or llama-server executable' >&2; exit 2; }
-[[ -z "$(git status --porcelain)" ]] || { echo 'Commit all repository changes before running' >&2; exit 2; }
+command -v git >/dev/null || { echo 'Git is required for source verification' >&2; exit 2; }
+git_status="$(git status --porcelain)"
+[[ -z "$git_status" ]] || { echo 'Commit all repository changes before running' >&2; exit 2; }
 [[ ! -e "logs/$P3_RUN_ID" ]] || { echo 'Run ID already exists; refusing to overwrite' >&2; exit 2; }
 P3_PORT="${P3_PORT:-$((20000 + RANDOM % 20000))}"
 P3_READY_TIMEOUT="${P3_READY_TIMEOUT:-180}"

@@ -236,6 +236,11 @@ sys.exit(int(os.getenv('FAKE_EXIT', '0')))
         self.run_wrapper(2)
         self.assertFalse((self.root / 'server.pid').exists())
 
+    def test_git_failure_does_not_look_like_clean_tree(self):
+        (self.root / 'bin/git').write_text('#!/bin/sh\nexit 17\n')
+        self.run_wrapper(17)
+        self.assertFalse((self.root / 'server.pid').exists())
+
     def test_occupied_port_refused_before_server(self):
         with socket.socket() as sock:
             sock.bind(('127.0.0.1', int(self.env['P3_PORT'])))
@@ -271,6 +276,7 @@ class ServePortTest(unittest.TestCase):
         finally:
             sys.path.pop(0)
         with patch('sys.argv', ['serve_model.py', '--llama-server', '/fake/server', '--device', 'CUDA0', '--port', '23901']), \
+                patch.dict(os.environ, {'OMP_NUM_THREADS': '4'}), \
                 patch.object(serve_model.subprocess, 'check_output', return_value='build 12244, test'), \
                 patch.object(serve_model, 'digest', return_value=json.loads((ROOT / 'configs/baseline.json').read_text())['model']['sha256']), \
                 patch.object(serve_model.os, 'execv', side_effect=SystemExit(0)) as execute:
@@ -278,6 +284,8 @@ class ServePortTest(unittest.TestCase):
                 serve_model.main()
             command = execute.call_args.args[1]
             self.assertEqual(command[command.index('--port') + 1], '23901')
+            self.assertEqual(command[command.index('--threads') + 1], '4')
+            self.assertEqual(command[command.index('--threads-batch') + 1], '4')
 
 
 if __name__ == '__main__':

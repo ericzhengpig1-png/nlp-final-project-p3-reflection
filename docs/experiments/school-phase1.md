@@ -4,6 +4,8 @@
 
 **队列实测更新：使用 `ai` 队列及 `-gpgpu '1 mig=2'`（一个 A30 12GB MIG 实例）。** 文档列出的 `gpu` 队列目前只含 g-node02/g-node04，调度器没有登记其 GPU 资源；`ai` 包含启用 MIG 的 g-node01。设备检查作业 30559 已成功。原冒烟 30537 首次获分配后因缺少 `CUDA_VISIBLE_DEVICES` 被保护脚本拦下；一期入口现从调度器的 `JH_GPU_RANK` 读取本作业、本节点的单个设备 UUID，拒绝冲突或多设备记录，不手动选择空闲卡。
 
+MIG 计算环境还缺少 Git。学校共享目录 `$HOME/p3-work/runtime-tools/` 已放置登录节点的 Git 2.27 和其非 glibc 依赖（libpcre2、libz、libcrypto），用于 `status` / `rev-parse` 内建命令；SHA256SUMS 同目录留档。入口增加这些路径，Git 缺失或检查失败时在模型启动前退出，不能将空输出当成干净工作树。模型服务的 action/prompt CPU 线程数均使用申请到的 4 核。
+
 ## 范围与时限
 
 | 阶段 | 内容 | 资源与上限 |

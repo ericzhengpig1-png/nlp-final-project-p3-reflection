@@ -2,6 +2,9 @@
 import contextlib
 import io
 import json
+import os
+import shutil
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -90,7 +93,7 @@ class SupplementaryTest(unittest.TestCase):
             result=self.fake_task(*args,**kwargs)
             if args[1]=='B':args[5]('thought',text='unexpected',attempt=1)
             return result
-        with tempfile.TemporaryDirectory() as tmp, patch.object(e,'LlamaServer'), patch.object(e,'run_task',side_effect=mismatch), contextlib.redirect_stdout(io.StringIO()):
+        with tempfile.TemporaryDirectory() as tmp, patch.object(e,'LlamaServer'), patch.object(e,'run_task',side_effect=mismatch), patch.object(e,'git',side_effect=lambda *a:'' if a[0]=='status' else 'test'), contextlib.redirect_stdout(io.StringIO()):
             p=Path(tmp)/'run'
             with self.assertRaisesRegex(RuntimeError,'First-attempt mismatch'):
                 e.execute(p,'http://unused',[4053],e.select_inputs(self.inputs,task_index=0),task_index=0)
@@ -113,6 +116,37 @@ class SupplementaryTest(unittest.TestCase):
                 self.assertEqual([v['memory'] for k,v in seen if k=='reset'],[[]])
             self.assertEqual(len(first),7)
             self.assertTrue(all(x==first[0] for x in first))
+
+    def test_submission_is_20_serial_batches_and_refuses_duplicate(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp)
+            for folder in ('scripts','logs','bin','.venv/bin'):(root/folder).mkdir(parents=True,exist_ok=True)
+            shutil.copyfile(e.ROOT/'scripts/submit_supplementary_phase1.sh',root/'scripts/submit_supplementary_phase1.sh')
+            (root/'bin/git').write_text('#!/bin/sh\nexit 0\n')
+            (root/'.venv/bin/python').write_text('#!/bin/sh\necho preflight-stub\n')
+            (root/'bin/jsub').write_text(f'#!{sys.executable}\n'+'''import json,sys
+from pathlib import Path
+p=Path('calls.json'); calls=json.loads(p.read_text()) if p.exists() else []
+calls.append(sys.argv[1:]);p.write_text(json.dumps(calls));print(f'Job <{40000+len(calls)}> is submitted to queue <test>')
+''')
+            for p in (root/'bin/git',root/'bin/jsub',root/'.venv/bin/python'):p.chmod(0o755)
+            env={**os.environ,'PATH':str(root/'bin')+':'+os.environ['PATH']}
+            cmd=['bash',str(root/'scripts/submit_supplementary_phase1.sh')]
+            result=subprocess.run(cmd,cwd=root,env=env,capture_output=True,text=True)
+            self.assertEqual(result.returncode,0,result.stderr)
+            calls=json.loads((root/'calls.json').read_text()); self.assertEqual(len(calls),21)
+            for i,args in enumerate(calls):
+                if i==0:self.assertNotIn('-w',args)
+                else:self.assertEqual(args[args.index('-w')+1],f'done({40000+i})')
+                self.assertIn('P3_EXPERIMENT=supplementary-4053',args)
+                if i<20:
+                    self.assertIn('P3_SEEDS=4053',args);self.assertIn(f'P3_TASK_INDEX={i}',args)
+                    self.assertIn('P3_CONDITIONS=A,B,S1,S2,S3,S4,S5',args)
+                    self.assertEqual(args[args.index('-gpgpu')+1],'1 mig=2')
+                else:self.assertNotIn('-gpgpu',args)
+            again=subprocess.run(cmd,cwd=root,env=env,capture_output=True)
+            self.assertNotEqual(again.returncode,0)
+            self.assertEqual(json.loads((root/'calls.json').read_text()),calls)
 
 
 if __name__ == '__main__':unittest.main()

@@ -1,8 +1,8 @@
 # 学校 GPU：七组实验部署与运行
 
-> **2026-11-23 远端实测更新：本课程账号实际位于 HPC 一期 `hpc1login.hpc.hkust-gz.edu.cn` / `yq_mgt02`，使用 UniScheduler (`jsub`)。本页原 Slurm 主流程适用于二期，当前账号不要直接执行第 6 节 `sbatch`。数据、模型文件及 Python 环境已准备，学校端 26 项无模型测试通过；一期作业适配和 Linux llama.cpp 运行库仍待完成。** 具体证据与离线资源处理见[学校端准备报告](../reports/school-preparation-2026-11-23.md)。
+> **当前账号请使用[HPC 一期实际运行流程](school-phase1.md)**：`hpc1login.hpc.hkust-gz.edu.cn` / `yq_mgt02`，UniScheduler (`jsub`)。一期入口和独立 smoke 模式已补齐，30 项无模型测试通过。用户已授权先冒烟、成功后后台运行七组；具体提交和执行状态以最新交接及调度器为准。本页以下保留二期 Slurm/容器参考，当前账号不要执行第 6 节 `sbatch`。资源下载问题的处理见[学校端准备报告](../reports/school-preparation-2026-11-23.md)。
 
-更新：2026-11-23。七组入口与学校脚本已接入，验证记录见[就绪检查报告](../reports/seven-arm-readiness.md)。**本次只完成实现、无模型检查和 GitHub 提交；未启动本地模型或学校实验。** 5 GPU 小时仍是前序方案的参考预算，实际分区、account/QoS、余额及获批时限尚需由课程确认。
+前序准备阶段的验证记录见[就绪检查报告](../reports/seven-arm-readiness.md)；其中“未启动实验”是该阶段的历史状态。最新学校运行授权与一期流程见上面的链接。
 
 七组为 A（无反思）、B（原反思）、S1（事实依据）、S2（失败归因）、S3（更新）、S4（剩余目标）、S5（信息密度）。每组同十题、同 4051/4052 两种子，共 140 单元，最多 420 次尝试；使用[冻结协议](../planning/seven-arm-screening.md)。首轮行为不一致会停止并保存证据，不能将其解释成反思收益。
 

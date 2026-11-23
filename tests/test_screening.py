@@ -163,6 +163,23 @@ class ScreeningTest(unittest.TestCase):
             experiment.main()
             server.assert_not_called()
 
+    def test_smoke_subset_and_summary_are_separate(self):
+        inputs = self.protocol, self.config, self.tasks, self.instructions, self.games, self.assets
+        smoke_inputs = experiment.select_inputs(inputs, smoke=True)
+        self.assertEqual(smoke_inputs[2], self.tasks[:1])
+        self.assertEqual(list(smoke_inputs[4]), self.tasks[:1])
+        self.assertEqual(len(inputs[2]), 10)
+        with tempfile.TemporaryDirectory() as directory, patch.object(experiment, 'LlamaServer'), \
+                patch.object(experiment, 'run_task', side_effect=self.fake_task), contextlib.redirect_stdout(io.StringIO()):
+            run = Path(directory) / 'smoke'
+            experiment.execute(run, 'http://unused', [4051], smoke_inputs, smoke=True)
+            summary = json.loads((run / 'summary.json').read_text())
+            manifest = json.loads((run / 'manifest.json').read_text())
+            self.assertEqual((summary['status'], summary['completed_units'], summary['expected_units']), ('complete', 7, 7))
+            self.assertEqual(summary['mode'], 'smoke')
+            self.assertEqual(manifest['mode'], 'smoke')
+            self.assertFalse(summary['full_two_seed_screening'])
+
     def test_success_and_policy_turn_cap_for_candidate(self):
         for actions, expected, reason in ((iter((ROOT / 'configs/tutorial_actions.txt').read_text().splitlines()), [True], 'won'),
                                           (None, [False] * 3, 'policy_turn_cap')):

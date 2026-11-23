@@ -72,6 +72,8 @@ sys.exit(int(os.getenv('FAKE_EXIT', '0')))
                     'P3_RUN_ID': 'fake-job', 'P3_PORT': str(port), 'P3_READY_TIMEOUT': '3', 'SLURM_JOB_ID': '123',
                     'CUDA_VISIBLE_DEVICES': '0'}
         self.env.pop('P3_CONTAINER', None)
+        self.env.pop('JH_JOBID', None)
+        self.env.pop('P3_MODE', None)
 
     def command(self):
         return ['bash', str(self.root / 'scripts/run_school_gpu.sh')]
@@ -108,6 +110,30 @@ sys.exit(int(os.getenv('FAKE_EXIT', '0')))
         result = self.run_wrapper(2)
         self.assertIn('CUDA_VISIBLE_DEVICES', result.stderr)
         self.assertFalse((self.root / 'server.pid').exists())
+
+    def test_unischeduler_allocation_and_metadata(self):
+        self.env.pop('SLURM_JOB_ID')
+        self.env['JH_JOBID'] = '30530'
+        self.run_wrapper(0)
+        record = json.loads((self.root / 'logs/fake-job-job/job.json').read_text())
+        self.assertEqual(record['unischeduler_job_id'], '30530')
+        self.assertEqual(record['scheduler'], 'unischeduler')
+
+    def test_unischeduler_cpu_job_refused(self):
+        self.env.pop('SLURM_JOB_ID')
+        self.env.pop('CUDA_VISIBLE_DEVICES')
+        self.env['JH_JOBID'] = '30530'
+        self.run_wrapper(2)
+        self.assertFalse((self.root / 'server.pid').exists())
+
+    def test_smoke_arguments_and_invalid_mode(self):
+        self.env['P3_MODE'] = 'invalid'
+        self.run_wrapper(2)
+        self.assertFalse((self.root / 'server.pid').exists())
+        self.env['P3_MODE'] = 'smoke'
+        path = self.root / 'scripts/run_experiment.py'
+        path.write_text("import sys\nassert '--smoke' in sys.argv\nassert sys.argv[sys.argv.index('--seeds') + 1] == '4051'\n" + path.read_text())
+        self.run_wrapper(0)
 
     def test_runner_failure_propagates(self):
         self.env['FAKE_EXIT'] = '7'

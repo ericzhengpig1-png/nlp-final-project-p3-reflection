@@ -2,12 +2,12 @@
 # Run only in an allocated school GPU job/container. Does not submit a job.
 set -euo pipefail
 
-if [[ -z "${SLURM_JOB_ID:-}" && "${P3_CONTAINER:-0}" != 1 ]]; then
-    echo 'Refusing to start: use a school Slurm allocation, or P3_CONTAINER=1 inside an allocated school GPU container.' >&2
+if [[ -z "${SLURM_JOB_ID:-}" && -z "${JH_JOBID:-}" && "${P3_CONTAINER:-0}" != 1 ]]; then
+    echo 'Refusing to start: use a school Slurm/UniScheduler allocation, or P3_CONTAINER=1 inside an allocated school GPU container.' >&2
     exit 2
 fi
-if [[ -n "${SLURM_JOB_ID:-}" && ( -z "${CUDA_VISIBLE_DEVICES:-}" || "${CUDA_VISIBLE_DEVICES}" == -1 || "${CUDA_VISIBLE_DEVICES}" == NoDevFiles ) ]]; then
-    echo 'Slurm has not exposed an allocated GPU through CUDA_VISIBLE_DEVICES; refusing to start.' >&2
+if [[ ( -n "${SLURM_JOB_ID:-}" || -n "${JH_JOBID:-}" ) && ( -z "${CUDA_VISIBLE_DEVICES:-}" || "${CUDA_VISIBLE_DEVICES}" == -1 || "${CUDA_VISIBLE_DEVICES}" == NoDevFiles ) ]]; then
+    echo 'Scheduler has not exposed an allocated GPU through CUDA_VISIBLE_DEVICES; refusing to start.' >&2
     exit 2
 fi
 ROOT="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -22,7 +22,12 @@ P3_PYTHON="${P3_PYTHON:-$ROOT/.venv/bin/python}"
 P3_PORT="${P3_PORT:-$((20000 + RANDOM % 20000))}"
 P3_READY_TIMEOUT="${P3_READY_TIMEOUT:-180}"
 [[ "$P3_READY_TIMEOUT" =~ ^[1-9][0-9]*$ ]] || { echo 'Invalid P3_READY_TIMEOUT' >&2; exit 2; }
-read -r -a seeds <<< "${P3_SEEDS:-4051 4052}"
+mode_args=()
+case "${P3_MODE:-screening}" in
+    screening) read -r -a seeds <<< "${P3_SEEDS:-4051 4052}" ;;
+    smoke) mode_args=(--smoke); seeds=(4051) ;;
+    *) echo 'P3_MODE must be smoke or screening' >&2; exit 2 ;;
+esac
 export OMP_NUM_THREADS="${SLURM_CPUS_PER_TASK:-4}"
 export PYTHONUNBUFFERED=1
 export P3_JOB_LOG_DIR="$ROOT/logs/$P3_RUN_ID-job"
@@ -55,10 +60,12 @@ from pathlib import Path
 path, start, end, code, port = sys.argv[1:]
 Path(path).write_text(json.dumps({
     "hostname": socket.gethostname(), "slurm_job_id": os.getenv("SLURM_JOB_ID"),
+    "unischeduler_job_id": os.getenv("JH_JOBID"),
+    "scheduler": "unischeduler" if os.getenv("JH_JOBID") else ("slurm" if os.getenv("SLURM_JOB_ID") else "container"),
     "cuda_visible_devices": os.getenv("CUDA_VISIBLE_DEVICES"),
     "started_epoch": int(start), "ended_epoch": int(end), "wrapper_seconds": int(end)-int(start),
     "exit_code": int(code), "port": int(port),
-    "note": "Use Slurm accounting for billed GPU allocation time, including preparation and cleanup."
+    "note": "Use scheduler accounting for billed GPU allocation time, including preparation and cleanup."
 }, indent=2) + "\n", encoding="utf-8")
 PY
     exit "$result"
@@ -69,7 +76,7 @@ trap 'exit 143' TERM
 
 command -v setsid >/dev/null
 nvidia-smi --query-gpu=name,uuid,driver_version,memory.total --format=csv > "$P3_JOB_LOG_DIR/gpu.csv"
-"$P3_PYTHON" scripts/run_experiment.py --check-only --seeds "${seeds[@]}" > "$P3_JOB_LOG_DIR/preflight.json"
+"$P3_PYTHON" scripts/run_experiment.py --check-only --seeds "${seeds[@]}" "${mode_args[@]}" > "$P3_JOB_LOG_DIR/preflight.json"
 "$P3_PYTHON" - "$P3_PORT" <<'PY'
 import socket, sys
 port = int(sys.argv[1])
@@ -105,6 +112,6 @@ done
 [[ "$ready" == 1 ]] || { echo 'Timed out waiting for model server' >&2; exit 1; }
 kill -0 "$server_pid" 2>/dev/null || { echo 'Model server exited before experiment' >&2; exit 1; }
 setsid "$P3_PYTHON" scripts/run_experiment.py --run-id "$P3_RUN_ID" --seeds "${seeds[@]}" \
-    --server "http://127.0.0.1:$P3_PORT" > "$P3_JOB_LOG_DIR/experiment.log" 2>&1 &
+    "${mode_args[@]}" --server "http://127.0.0.1:$P3_PORT" > "$P3_JOB_LOG_DIR/experiment.log" 2>&1 &
 runner_pid=$!
 wait "$runner_pid"

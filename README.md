@@ -4,7 +4,7 @@ AIAA 4051 自然语言处理课程项目
 
 我们想知道：**智能体在 ALFWorld 做错一次之后，能不能利用文字反思，在下一次尝试里改变行动、少犯同样的错？**
 
-当前准备在学校 GPU 比较 A/B/S1–S5：见[学校运行流程](docs/experiments/school-gpu-runbook.md)和[就绪检查报告](docs/reports/seven-arm-readiness.md)。七组入口已接入；本次仅完成无模型检查，尚未启动学校实验。历史 M1 复现和结果见 [ALFWorld 与 A/B 基线](docs/experiments/baseline.md)。
+当前在学校 GPU 部署 A/B/S1–S5：见[一期实际运行流程](docs/experiments/school-phase1.md)。七组入口和独立冒烟模式已接入，30 项无模型检查通过；用户已授权先冒烟、成功后后台运行正式筛选。实际作业状态见 [AI_SYNC.md](AI_SYNC.md)。历史 M1 复现和结果见 [ALFWorld 与 A/B 基线](docs/experiments/baseline.md)。
 
 ## 仓库导航
 
@@ -51,6 +51,7 @@ nlp-final-project-p3-reflection/
 │   ├── run_experiment.py              # A/B/S1–S5 开发集筛选与配对汇总
 │   ├── run_school_gpu.sh              # 学校分配节点内的服务和实验管理
 │   ├── school_gpu.sbatch              # 一张 GPU 串行七组的 Slurm 模板
+│   ├── school_gpu_phase1.sh           # 当前学校账号的 UniScheduler 入口
 │   └── analyze_results.py             # 从日志生成指标表和图表
 ├── tests/                             # 验证环境重置、尝试上限和指标计算
 ├── docs/

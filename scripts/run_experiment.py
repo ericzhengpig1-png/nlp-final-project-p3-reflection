@@ -80,6 +80,14 @@ def make_schedule(tasks, seeds):
     return schedule
 
 
+def select_inputs(inputs, smoke=False):
+    if not smoke:
+        return inputs
+    protocol, config, tasks, instructions, games, assets = inputs
+    tasks = tasks[:1]
+    return protocol, config, tasks, instructions, {t: games[t] for t in tasks}, assets
+
+
 def summarize(results, seeds, task_count):
     per_seed, paired = {}, {}
     for seed in seeds:
@@ -127,12 +135,13 @@ def write_json(path, data):
     temporary.replace(path)
 
 
-def execute(run, server, seeds, inputs):
+def execute(run, server, seeds, inputs, smoke=False):
     protocol, config, tasks, instructions, games, assets = inputs
     schedule = make_schedule(tasks, seeds)
     run.mkdir(parents=True, exist_ok=False)
     start = time.perf_counter()
     metadata = {
+        "mode": "smoke" if smoke else "screening",
         "run_id": run.name, "git_commit": git("rev-parse", "HEAD"),
         "git_dirty": bool(git("status", "--porcelain")), "protocol": protocol, "config": config,
         "protocol_sha256": sha256((ROOT / "configs/seven_arm.json").read_text(encoding="utf-8").encode()),
@@ -141,7 +150,8 @@ def execute(run, server, seeds, inputs):
         "python": sys.version, "platform": platform.platform(), "hostname": platform.node(),
         "alfworld": version("alfworld"), "textworld": version("textworld"),
         "started_utc": datetime.now(timezone.utc).isoformat(), "command": sys.argv, "server": server,
-        "slurm_job_id": os.environ.get("SLURM_JOB_ID"), "cuda_visible_devices": os.environ.get("CUDA_VISIBLE_DEVICES"),
+        "slurm_job_id": os.environ.get("SLURM_JOB_ID"), "unischeduler_job_id": os.environ.get("JH_JOBID"),
+        "cuda_visible_devices": os.environ.get("CUDA_VISIBLE_DEVICES"),
         "job_log_dir": os.environ.get("P3_JOB_LOG_DIR"),
         "source_sha256": {str(p.relative_to(ROOT)): sha256(p.read_bytes())
                           for folder in ("scripts", "src") for p in sorted((ROOT / folder).rglob("*.py"))},
@@ -174,9 +184,10 @@ def execute(run, server, seeds, inputs):
             if status != "complete":
                 summary["mean_over_requested_seeds"] = None
             summary.update(status=status, error=error_text, completed_units=len(results), expected_units=len(schedule),
+                           mode=metadata["mode"],
                            wall_seconds=time.perf_counter() - start, all_cost_including_incomplete=all_cost,
                            active_unit=current if status != "complete" else None,
-                           full_two_seed_screening=status == "complete" and tuple(seeds) == SEEDS)
+                           full_two_seed_screening=not smoke and status == "complete" and len(tasks) == 10 and tuple(seeds) == SEEDS)
             write_json(run / "summary.json", summary)
 
         try:
@@ -216,17 +227,22 @@ def execute(run, server, seeds, inputs):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--check-only", action="store_true", help="Check frozen inputs without any model requests")
+    parser.add_argument("--smoke", action="store_true", help="Separate smoke run: first development task, all groups, seed 4051")
     parser.add_argument("--run-id", help="New directory under logs/; never overwritten")
-    parser.add_argument("--seeds", type=int, nargs="+", default=list(SEEDS), choices=SEEDS)
+    parser.add_argument("--seeds", type=int, nargs="+", choices=SEEDS)
     parser.add_argument("--server", default="http://127.0.0.1:8080")
     args = parser.parse_args()
+    args.seeds = args.seeds or ([4051] if args.smoke else list(SEEDS))
+    if args.smoke and args.seeds != [4051]:
+        parser.error("--smoke uses only seed 4051")
     if not args.check_only and (not args.run_id or not args.run_id.isascii() or
                                not args.run_id.replace("-", "").replace("_", "").isalnum()):
         parser.error("--run-id must contain ASCII letters, digits, hyphens or underscores")
-    inputs = load_inputs()
+    inputs = select_inputs(load_inputs(), args.smoke)
     schedule = make_schedule(inputs[2], args.seeds)
     if args.check_only:
-        print(json.dumps({"check": "passed", "conditions": CONDITIONS, "seeds": args.seeds,
+        print(json.dumps({"check": "passed", "mode": "smoke" if args.smoke else "screening",
+                          "conditions": CONDITIONS, "seeds": args.seeds,
                           "tasks": len(inputs[2]), "units": len(schedule), "model_requests": 0}, indent=2))
         return
     if git("status", "--porcelain"):
@@ -236,7 +252,7 @@ def main():
         raise KeyboardInterrupt(f"signal {signum}")
 
     signal.signal(signal.SIGTERM, terminate)
-    execute(ROOT / "logs" / args.run_id, args.server, args.seeds, inputs)
+    execute(ROOT / "logs" / args.run_id, args.server, args.seeds, inputs, smoke=args.smoke)
 
 
 if __name__ == "__main__":

@@ -14,7 +14,8 @@
 | 实验规划 | [A/B/S1–S5 七组筛选](planning/seven-arm-screening.md) | 七组同十题、同两种子比较；变量控制、提升判据、参考预算与运行前准备；待执行 |
 | 学校 GPU | [上传与远端运行流程](experiments/school-gpu-runbook.md) | 七组入口已接入；学校部署、Slurm/容器脚本、预检与日志回收；尚未启动实验 |
 | 实现验收 | [七组与学校脚本就绪检查](reports/seven-arm-readiness.md) | 无模型协议测试、140 单元模拟、服务失败/中断清理与实际远端待验收项 |
-| 学校实测 | [2026-11-23 学校端准备](reports/school-preparation-2026-11-23.md) | 已处理资源下载失败，学校端 26 项测试通过；实际账号为一期 jsub，作业适配与 Linux 推理运行库待完成 |
+| 学校实测 | [2026-11-23 学校端准备](reports/school-preparation-2026-11-23.md) | 已处理资源下载失败，历史准备证据与校验记录 |
+| 当前运行 | [HPC 一期实际运行流程](experiments/school-phase1.md) | UniScheduler 入口、CUDA 编译、独立冒烟、正式七组的成功依赖与后台运行 |
 | 历史复审 | [11 月 22 日完整复审](planning/review-2026-11-22.md) | 当时的审阅结论、原定排期与证据索引 |
 | 历史复审 | [planning/plan.html](planning/plan.html) | 可在浏览器打开的一页项目速览 |
 | 实验说明 | [experiments/baseline.md](experiments/baseline.md) | ALFWorld 安装、A/B 基线复现、已运行结果与证据 |

@@ -16,7 +16,7 @@
 | 实现验收 | [七组与学校脚本就绪检查](reports/seven-arm-readiness.md) | 无模型协议测试、140 单元模拟、服务失败/中断清理与实际远端待验收项 |
 | 学校实测 | [2026-11-23 学校端准备](reports/school-preparation-2026-11-23.md) | 已处理资源下载失败，历史准备证据与校验记录 |
 | 当前运行 | [HPC 一期实际运行流程](experiments/school-phase1.md) | UniScheduler 入口、CUDA 编译、S1/S4 优先四组短作业与后台运行 |
-| 提交记录 | [S1/S4 短作业记录](reports/school-priority-launch-2026-11-23.md) | 实际作业号、范围、时限、验证与证据路径 |
+| 提交记录 | [两轮开发筛选短作业记录](reports/school-priority-launch-2026-11-23.md) | S1/S4 已完成；S2/S3/S5 与 A/B 补跑的作业号、时限、验证与后台统一比较 |
 | 当前实测 | [GPU 队列诊断与冒烟通过](reports/school-queue-diagnosis-2026-11-23.md) | ai / MIG 可用证据、四组单题结果、首轮审计修复及正式批次迁移 |
 | 历史复审 | [11 月 22 日完整复审](planning/review-2026-11-22.md) | 当时的审阅结论、原定排期与证据索引 |
 | 历史复审 | [planning/plan.html](planning/plan.html) | 可在浏览器打开的一页项目速览 |

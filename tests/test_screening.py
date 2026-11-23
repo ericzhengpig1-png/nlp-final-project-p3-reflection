@@ -210,6 +210,26 @@ class ScreeningTest(unittest.TestCase):
             rows = [json.loads(line) for line in (run / 'task_results.jsonl').read_text().splitlines()]
             self.assertFalse(rows[-1]['first_attempt_matches'])
 
+    def test_post_failure_reflection_is_costed_but_not_first_attempt_behavior(self):
+        def reflected(*args, **kwargs):
+            result = self.fake_task(*args, **kwargs)
+            if args[1] != 'A':
+                args[5]('model_request', kind='reflection', seed=5050, prompt_sha256='reflection', attempt=1)
+                args[5]('model_response', kind='reflection', seed=5050, output='New retry plan', attempt=1,
+                        input_tokens=50, output_tokens=3, inference_seconds=.02)
+            return result
+
+        inputs = self.protocol, self.config, self.tasks, self.instructions, self.games, self.assets
+        with tempfile.TemporaryDirectory() as directory, patch.object(experiment, 'LlamaServer'), \
+                patch.object(experiment, 'run_task', side_effect=reflected), contextlib.redirect_stdout(io.StringIO()):
+            run = Path(directory) / 'smoke'
+            experiment.execute(run, 'http://unused', [4051], experiment.select_inputs(inputs, smoke=True),
+                               smoke=True, conditions=('A', 'B'))
+            rows = [json.loads(line) for line in (run / 'task_results.jsonl').read_text().splitlines()]
+            self.assertTrue(all(row['first_attempt_matches'] for row in rows))
+            self.assertEqual([row['cost']['model_calls'] for row in rows], [1, 2])
+            self.assertEqual(json.loads((run / 'summary.json').read_text())['all_cost_including_incomplete']['input_tokens'], 70)
+
     def test_check_only_never_connects_to_model(self):
         with patch('sys.argv', ['run_experiment.py', '--check-only']), \
                 patch.object(experiment, 'LlamaServer') as server, contextlib.redirect_stdout(io.StringIO()):

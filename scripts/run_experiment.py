@@ -183,7 +183,8 @@ def execute(run, server, seeds, inputs, smoke=False, task_index=None, conditions
             if event == "environment_step":
                 cost["env_actions"] += 1
                 all_cost["env_actions"] += 1
-            if fields.get("attempt") == 1 and event in AUDIT_FIELDS:
+            # Reflection is generated after failure, while its context still says attempt=1.
+            if fields.get("attempt") == 1 and event in AUDIT_FIELDS and fields.get("kind") != "reflection":
                 audit.append([event, {k: fields[k] for k in AUDIT_FIELDS[event]}])
 
         def save_summary():

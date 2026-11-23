@@ -8,7 +8,7 @@
 
 - 已接入 A/B/S1–S5 共用循环、冻结指令/配置、4051/4052 双种子轮转、首轮核对与配对汇总。
 - 新增学校 Slurm/容器脚本，支持端口检查、就绪等待、异常/中断清理及失败留档。具体验证见[就绪报告](docs/reports/seven-arm-readiness.md)。
-- 提交分支：`feat/seven-arm-school-gpu`。此次沿用原五份提示词和 baseline.json，没有新增模型实验、没有提交学校作业，GPU 用量为 0。
+- 提交分支：`feat/seven-arm-school-gpu`，实现提交 [02528bf](https://github.com/ericzhengpig1-png/nlp-final-project-p3-reflection/commit/02528bf9c01418015a0f0fb3486569591b3cd945) 已推送并核对远端。此次沿用原五份提示词和 baseline.json，没有新增模型实验、没有提交学校作业，GPU 用量为 0。
 - 下一步：负责人确认课程入口、分区/account/QoS 与预算，在学校按流程安装和预检；获批后提交作业。最终 C 和留出实验仍未启动。
 
 ## 历史快照 · 2026-11-09

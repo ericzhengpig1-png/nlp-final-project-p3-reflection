@@ -2,6 +2,8 @@
 
 日期：2026-11-23（北京时间）。交付分支：`feat/seven-arm-school-gpu`。
 
+实现提交：[02528bf](https://github.com/ericzhengpig1-png/nlp-final-project-p3-reflection/commit/02528bf9c01418015a0f0fb3486569591b3cd945)，已推送并核对远端完整 SHA 与本地一致。后续交接记录提交不改变实验代码。
+
 **结论：七组开发入口、学校 Slurm/容器脚本和无模型检查已完成。未启动本地模型，未连接或提交学校实验，新增 GPU 用量为 0。** 本报告证明协议实现和脚本生命周期检查通过，不提供 S1–S5 的真实效果或学校性能结论。
 
 ## 实现范围
@@ -30,6 +32,7 @@
 | `python scripts/run_experiment.py --check-only` | `passed`，7 组 / 10 题 / 2 种子 / 140 单元，`model_requests: 0` |
 | `bash -n scripts/run_school_gpu.sh scripts/school_gpu.sbatch` | 通过 |
 | Git diff 空白检查 | 通过 |
+| 提交后从本地 Git 历史新克隆到临时 Linux 目录，复用既有数据/上游文件执行预检与 Bash 语法检查 | 通过，Git 工作区干净；验证 Git 中的 LF 文件与全部冻结哈希一致，没有启动模型 |
 
 测试文件为 [test_screening.py](../../tests/test_screening.py)、[test_school_gpu.py](../../tests/test_school_gpu.py) 及原 baseline/Anchor 测试。新测试未使用真实模型服务；完整调度使用模拟任务，学校生命周期使用临时假 GPU 命令、假服务和假实验进程。
 

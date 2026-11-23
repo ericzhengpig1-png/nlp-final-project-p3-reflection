@@ -52,4 +52,4 @@ Files: `docs/experiments/school-gpu-runbook.md`, `README.md`, `AI_SYNC.md`, `doc
 
 - [x] 更新可复制学校命令，区分准备、未来提交、状态查看及日志回收。
 - [x] 完成自检：原配置/提示词不变；历史数据不变；无模型、凭据或原始大日志入库。
-- [ ] Git 交付：提交 `feat/seven-arm-school-gpu`，推送并核对远端 SHA。执行回执以最终聊天中的 GitHub 提交链接为准。
+- [x] Git 交付：实现提交 `02528bf9c01418015a0f0fb3486569591b3cd945` 已推送至 `feat/seven-arm-school-gpu`，远端 SHA 核对一致；最终交接记录以本分支历史为准。

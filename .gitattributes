@@ -1,0 +1,4 @@
+*.sh text eol=lf
+*.sbatch text eol=lf
+configs/*.json text eol=lf
+prompts/reflection_candidates/*.txt text eol=lf

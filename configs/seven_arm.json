@@ -1,0 +1,16 @@
+{
+  "protocol": "seven-arm-v1",
+  "hash_encoding": "UTF-8 text with LF newlines",
+  "baseline_sha256": "5edb6c26f616cec8a76586ced9a9b0681375101f86582de9bac619f1c251ef44",
+  "registry_sha256": "badfd3eaccf12cffaeb1d11769bd0f10e60b6c41789d24dd968c07f2d3667da2",
+  "seeds": [4051, 4052],
+  "conditions": {
+    "A": null,
+    "B": {"file": "prompts/reflection_candidates/b_original_instruction.txt", "sha256": "056f6193227416b9ac188daf677b559e17dff5757af57236c968f4608f468723"},
+    "S1": {"file": "prompts/reflection_candidates/s1_observation_v1.draft.txt", "sha256": "d9cd053bf0113dbfad2c0ebdd735cf57a2d65e6829d62060e5405c2efaa3d4e3"},
+    "S2": {"file": "prompts/reflection_candidates/s2_diagnosis_v1.draft.txt", "sha256": "ca54a7e18ce724bae225c7daf768a1249cea6b0c791845f7ab0d15e7a0871018"},
+    "S3": {"file": "prompts/reflection_candidates/s3_update_v1.draft.txt", "sha256": "95db520bb6fdaad13036fac7a1f2d7c8152c723ccf7adb05ba3a52e9d4c5605f"},
+    "S4": {"file": "prompts/reflection_candidates/s4_remaining_goals_v1.draft.txt", "sha256": "4efb22cfdbd80a71a684158bf2f62908487bc52e395d52f0eb7b04f770ab36fe"},
+    "S5": {"file": "prompts/reflection_candidates/s5_density_v1.draft.txt", "sha256": "c1161f1dc3853e168b5b24a6f6c8acbdb464e204491f223f15338bed5e4f3216"}
+  }
+}

@@ -14,6 +14,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from src.agent.llama_server import LlamaServer
+from src.reflection.instructions import reflection_prompt
 from src.environment.alfworld_text import (
     open_game, policy_observation, state_digest, task_instruction, textworld_command,
 )
@@ -55,7 +56,12 @@ def reflexion_assets(config):
     return EnvironmentHistory, _generate_reflection_query, prompts
 
 
-def run_task(game_file, condition, config, assets, model, record, reset_hashes):
+def run_task(game_file, condition, config, assets, model, record, reset_hashes,
+             reflection_instruction=None):
+    if condition not in ("A", "B", "S1", "S2", "S3", "S4", "S5"):
+        raise ValueError(f"Unknown condition: {condition}")
+    if condition.startswith("S") != bool(reflection_instruction):
+        raise ValueError("Only S1-S5 require a custom reflection instruction")
     history_class, reflection_query, prompts = assets
     task_type = game_file.parts[-3].split("-")[0]
     prefix = PREFIXES[task_type]
@@ -119,9 +125,10 @@ def run_task(game_file, condition, config, assets, model, record, reset_hashes):
         results.append(success)
         if success:
             break
-        if condition == "B" and attempt < config["max_attempts"]:
+        if condition != "A" and attempt < config["max_attempts"]:
             scenario = str(history) + "\n\nSTATUS: FAIL\n\n#####"
-            reflection = model.generate(reflection_query(scenario, memory[-3:]),
+            prompt = reflection_prompt(reflection_query, scenario, memory[-3:], reflection_instruction)
+            reflection = model.generate(prompt,
                                         "reflection", start_seed + 999, **ctx)
             memory.append(reflection)
             record("reflection", text=reflection, next_attempt=attempt + 1, **ctx)

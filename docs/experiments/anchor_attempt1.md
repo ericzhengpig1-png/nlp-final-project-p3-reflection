@@ -13,7 +13,7 @@
 ../.p3-venv/bin/python scripts/run_anchor.py dev --run-id anchor-attempt1-dev --bank logs/anchor-attempt1-bank-v1/bank.json
 ```
 
-先核对 `pilot` 日志中的复位、动作上限、相同库哈希和实际检索，再执行 `dev`。训练 ID 在 [配置](../configs/anchor_attempt1.json) 中预先固定。从官方 `train` 数据按任务类型分组，排除不可解、可移动容器和切片题，每类选 `SHA-256("anchor-attempt-1:4051:" + task_id)` 最小的一个。开发集沿用 10 道，留出集仅登记 ID。
+先核对 `pilot` 日志中的复位、动作上限、相同库哈希和实际检索，再执行 `dev`。训练 ID 在 [配置](../../configs/anchor_attempt1.json) 中预先固定。从官方 `train` 数据按任务类型分组，排除不可解、可移动容器和切片题，每类选 `SHA-256("anchor-attempt-1:4051:" + task_id)` 最小的一个。开发集沿用 10 道，留出集仅登记 ID。
 
 ## 筛选和移植范围
 

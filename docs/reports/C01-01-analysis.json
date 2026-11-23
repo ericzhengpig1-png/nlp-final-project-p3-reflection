@@ -1,0 +1,705 @@
+{
+  "date": "2026-11-23",
+  "status": "draft_no_gpu",
+  "new_gpu_hours": 0,
+  "independent_review": "pending",
+  "run_id": "m1-dev-ab-20261110",
+  "run_commit": "9b3ca7b6328d817e3e22abdd761a209dcb333ea7",
+  "source_sha256": {
+    "logs/m1-dev-ab-20261110/trace.jsonl": "5785a47257783ebaab2106b8323a4cad03d6bb476b6acb2be70ccbd0f9bb2235",
+    "logs/m1-dev-ab-20261110/summary.json": "715df17bbb1dda3450ec1af3a4f41af7c8f4352dce3a0971d22e7abfa93aa5ba",
+    "logs/m1-dev-ab-20261110/manifest.json": "0323d88d3f73d2891c6e6e8e7f7141bba9889e1d24d4160f048de098e9ebb695",
+    "configs/baseline.json": "5edb6c26f616cec8a76586ced9a9b0681375101f86582de9bac619f1c251ef44",
+    "scripts/run_baseline.py": "e528883757f61f56f440208865ad2106820704f89639e945ac6e5d94712ee024",
+    "src/agent/llama_server.py": "000237f624d7d95dc789369ec33800f943c24eca0e4df8179056a3ea097248ed",
+    "data/reflexion/generate_reflections.py": "d7fbe4af7ff21ce9bc73ad2bcf16bf265682d1fb3554dc62985f3ada09997ef7",
+    "prompts/c01_observation_v1.draft.txt": "b54ce1ac0ee59bc11d482575cd706f8117a9f62bc7bb074f29f69289da70f54d"
+  },
+  "annotations": [
+    {
+      "name": "放书 / 1",
+      "task_id": "json_2.1.1/valid_seen/pick_and_place_simple-Book-None-SideTable-329/trial_T20190908_050633_745514",
+      "reflection_line": 1874,
+      "request_line": 1872,
+      "reflection_text": "I was unable to find a book in the environment. I should have checked drawer 1, drawer 2, drawer 3, and drawer 4. I should have taken a book from drawer 1, then put it on sidetable 1. I should have taken a book from drawer 2, then put it on sidetable 1. I should have taken a book from drawer 3, then put it on sidetable 1. I should have taken a book from drawer 4, then put it on sidetable 1. I should have put a book on sidetable 1 after checking all the drawers. I should have put a book on sidetable 1 after checking all the drawers. I should have put a book on sidetable 1 after checking all the drawers. I should have put a book on sidetable 1 after checking all the drawers. I should have put a book on sidetable 1 after checking all the drawers. I should have put a book on sidetable 1 after checking all the drawers. I should have put a book on sidetable 1 after checking all the drawers. I should have put a book on sidetable 1 after checking all the drawers. I should have put a book on sid",
+      "fact_assessment": "未找到书属实；从已检查的抽屉拿书缺乏依据。",
+      "actionability": "具体动作有，但位置错误。",
+      "reset_confusion": "未见明确跨重置状态持有断言，不能判为已观察到的错误机制。",
+      "next_behavior": "重试从餐桌拿书成功，不能归功于抽屉建议。",
+      "next_success": true,
+      "next_end_line": 1912,
+      "memory_verified": true,
+      "evidence": [
+        {
+          "line": 1762,
+          "attempt": 1,
+          "action_number": 2,
+          "action": "open drawer 1",
+          "observation": "You open the drawer 1. The drawer 1 is open. In it, you see a cellphone 1."
+        },
+        {
+          "line": 1792,
+          "attempt": 1,
+          "action_number": 9,
+          "action": "open drawer 2",
+          "observation": "You open the drawer 2. The drawer 2 is open. In it, you see a creditcard 1."
+        },
+        {
+          "line": 1804,
+          "attempt": 1,
+          "action_number": 12,
+          "action": "go to drawer 3",
+          "observation": "You arrive at drawer 3. On the drawer 3, you see a keychain 2."
+        },
+        {
+          "line": 1816,
+          "attempt": 1,
+          "action_number": 16,
+          "action": "go to drawer 4",
+          "observation": "You arrive at drawer 4. On the drawer 4, you see a cd 2."
+        },
+        {
+          "line": 1896,
+          "attempt": 2,
+          "action_number": 5,
+          "action": "go to diningtable 1",
+          "observation": "You arrive at diningtable 1. On the diningtable 1, you see a alarmclock 1, a book 3, a cd 3, a cd 1, a creditcard 2, a keychain 3, a keychain 1, a laptop 1, a mug 3, a mug 2, a mug 1, a pen 1, and a pencil 1."
+        },
+        {
+          "line": 1902,
+          "attempt": 2,
+          "action_number": 6,
+          "action": "take book 3 from diningtable 1",
+          "observation": "You pick up the book 3 from the diningtable 1."
+        },
+        {
+          "line": 1911,
+          "attempt": 2,
+          "action_number": 8,
+          "action": "put book 3 in/on sidetable 1",
+          "observation": "You move the book 3 to the sidetable 1."
+        }
+      ]
+    },
+    {
+      "name": "黄油刀 / 1",
+      "task_id": "json_2.1.1/valid_seen/pick_clean_then_place_in_recep-ButterKnife-None-CounterTop-8/trial_T20190909_105559_983897",
+      "reflection_line": 2034,
+      "request_line": 2032,
+      "reflection_text": "I was stuck in a loop in which I continually cleaned the sinkbasin 1 instead of cleaning the butterknife 1. I should have taken butterknife 1 from countertop 1, then cleaned it with sinkbasin 1, then put it in/on countertop 1. It did not help to execute two identical actions in a row. I will try to execute a different action if I am stuck in a loop again. I will also try to find a butterknife 1 on countertop 1. I will also try to find a butterknife 1 on countertop 2. I will also try to find a butterknife 1 on countertop 3. I will also try to find a butterknife 1 on countertop 4. I will also try to find a butterknife 1 on sinkbasin 1. I will also try to find a butterknife 1 on stoveburner 1. I will also try to find a butterknife 1 on stoveburner 2. I will also try to find a butterknife 1 on stoveburner 3. I will also try to find a butterknife 1 on stoveburner 4. I will also try to find a butterknife 1 on drawer 1. I will also try",
+      "fact_assessment": "把失败动作误述成清洗水槽；countertop 1 没有目标，2 已看到目标。",
+      "actionability": "拿取→清洁→放置顺序合理，位置不对。",
+      "reset_confusion": "未见明确跨重置状态持有断言，不能判为已观察到的错误机制。",
+      "next_behavior": "先从台面1拿取失败，再从台面2拿取、清洁、放置成功。",
+      "next_success": true,
+      "next_end_line": 2105,
+      "memory_verified": true,
+      "evidence": [
+        {
+          "line": 1928,
+          "attempt": 1,
+          "action_number": 3,
+          "action": "go to countertop 1",
+          "observation": "You arrive at countertop 1. On the countertop 1, you see a cup 1, a houseplant 1, a lettuce 1, a soapbottle 1, a spatula 1, and a spoon 1."
+        },
+        {
+          "line": 1940,
+          "attempt": 1,
+          "action_number": 5,
+          "action": "clean butterknife 1 with sinkbasin 1",
+          "observation": "Nothing happens."
+        },
+        {
+          "line": 1973,
+          "attempt": 1,
+          "action_number": 14,
+          "action": "go to countertop 2",
+          "observation": "You arrive at countertop 2. On the countertop 2, you see a bread 1, a butterknife 1, a egg 1, a knife 2, a knife 1, a mug 3, a pen 1, a sink 1, a spatula 3, a spatula 2, and a spraybottle 2."
+        },
+        {
+          "line": 2056,
+          "attempt": 2,
+          "action_number": 4,
+          "action": "take butterknife 1 from countertop 1",
+          "observation": "Nothing happens."
+        },
+        {
+          "line": 2086,
+          "attempt": 2,
+          "action_number": 10,
+          "action": "take butterknife 1 from countertop 2",
+          "observation": "You pick up the butterknife 1 from the countertop 2."
+        },
+        {
+          "line": 2095,
+          "attempt": 2,
+          "action_number": 12,
+          "action": "clean butterknife 1 with sinkbasin 1",
+          "observation": "You clean the butterknife 1 using the sinkbasin 1."
+        },
+        {
+          "line": 2104,
+          "attempt": 2,
+          "action_number": 14,
+          "action": "put butterknife 1 in/on countertop 2",
+          "observation": "You move the butterknife 1 to the countertop 2."
+        }
+      ]
+    },
+    {
+      "name": "枕头 / 1",
+      "task_id": "json_2.1.1/valid_seen/look_at_obj_in_light-Pillow-None-DeskLamp-323/trial_T20190908_053153_077977",
+      "reflection_line": 2212,
+      "request_line": 2210,
+      "reflection_text": "I was unable to examine the pillow with the desklamp because the pillow was not found on the sidetable 1 or sidetable 2. I should have looked for the pillow on the desk 1 or drawer 1. I will try to find the pillow on the desk 1 or drawer 1. I will also try to find the pillow on the sidetable 1 or sidetable 2 if I am stuck in a loop again. I will also try to find the pillow on the desk 1 or drawer 1 if I am stuck in a loop again. I will also try to find the pillow on the sidetable 1 or sidetable 2 if I am stuck in a loop again. I will also try to find the pillow on the desk 1 or drawer 1 if I am stuck in a loop again. I will also try to find the pillow on the sidetable 1 or sidetable 2 if I am stuck in a loop again. I will also try to find the pillow on the desk 1 or drawer 1 if I am stuck in a loop again. I will also try to find the pillow on the sidetable 1 or sidetable 2 if I am stuck in a loop again. I will",
+      "fact_assessment": "未找到枕头属实；建议重查已检查的 desk 1 / drawer 1。",
+      "actionability": "没有有依据的新路径；搜索未知位置本身不算捏造。",
+      "reset_confusion": "未见明确跨重置状态持有断言，不能判为已观察到的错误机制。",
+      "next_behavior": "下次前25个环境动作重复，然后无效拿取枕头，失败。",
+      "next_success": false,
+      "next_end_line": 2310,
+      "memory_verified": true,
+      "evidence": [
+        {
+          "line": 2169,
+          "attempt": 1,
+          "action_number": 21,
+          "action": "open drawer 1",
+          "observation": "You open the drawer 1. The drawer 1 is open. In it, you see nothing."
+        },
+        {
+          "line": 2172,
+          "attempt": 1,
+          "action_number": 22,
+          "action": "go to desk 1",
+          "observation": "You arrive at desk 1. On the desk 1, you see a bowl 1, a cellphone 1, a desklamp 1, a keychain 2, a mug 2, a mug 1, and a pencil 1."
+        },
+        {
+          "line": 2175,
+          "attempt": 1,
+          "action_number": 23,
+          "action": "go to sidetable 1",
+          "observation": "You arrive at sidetable 1. On the sidetable 1, you see a cellphone 2."
+        },
+        {
+          "line": 2178,
+          "attempt": 1,
+          "action_number": 24,
+          "action": "go to sidetable 2",
+          "observation": "You arrive at sidetable 2. On the sidetable 2, you see a creditcard 2, a desklamp 2, a keychain 3, and a pen 1."
+        },
+        {
+          "line": 2288,
+          "attempt": 2,
+          "action_number": 25,
+          "action": "use desklamp 2",
+          "observation": "You turn on the desklamp 2."
+        },
+        {
+          "line": 2294,
+          "attempt": 2,
+          "action_number": 26,
+          "action": "take pillow 1 from sidetable 2",
+          "observation": "Nothing happens."
+        }
+      ]
+    },
+    {
+      "name": "枕头 / 2",
+      "task_id": "json_2.1.1/valid_seen/look_at_obj_in_light-Pillow-None-DeskLamp-323/trial_T20190908_053153_077977",
+      "reflection_line": 2313,
+      "request_line": 2311,
+      "reflection_text": "I was unable to examine the pillow with the desklamp because the pillow was not found on the sidetable 1 or sidetable 2. I should have looked for the pillow on the desk 1 or drawer 1. I will try to find the pillow on the desk 1 or drawer 1. I will also try to find the pillow on the sidetable 1 or sidetable 2 if I am stuck in a loop again. I will also try to find the pillow on the desk 1 or drawer 1 if I am stuck in a loop again. I will also try to find the pillow on the sidetable 1 or sidetable 2 if I am stuck in a loop again. I will also try to find the pillow on the desk 1 or drawer 1 if I am stuck in a loop again. I will also try to find the pillow on the sidetable 1 or sidetable 2 if I am stuck in a loop again. I will also try to find the pillow on the desk 1 or drawer 1 if I am stuck in a loop again. I will also try to find the pillow on the sidetable 1 or sidetable 2 if I am stuck in a loop again. I will",
+      "fact_assessment": "与上一条逐字一致，没利用新发生的无效拿取反馈。",
+      "actionability": "仍无有依据的新路径。",
+      "reset_confusion": "未见明确跨重置状态持有断言，不能判为已观察到的错误机制。",
+      "next_behavior": "第三次仍重复前25个动作，未拿枕头，失败。",
+      "next_success": false,
+      "next_end_line": 2408,
+      "memory_verified": true,
+      "evidence": [
+        {
+          "line": 2276,
+          "attempt": 2,
+          "action_number": 21,
+          "action": "open drawer 1",
+          "observation": "You open the drawer 1. The drawer 1 is open. In it, you see nothing."
+        },
+        {
+          "line": 2279,
+          "attempt": 2,
+          "action_number": 22,
+          "action": "go to desk 1",
+          "observation": "You arrive at desk 1. On the desk 1, you see a bowl 1, a cellphone 1, a desklamp 1, a keychain 2, a mug 2, a mug 1, and a pencil 1."
+        },
+        {
+          "line": 2294,
+          "attempt": 2,
+          "action_number": 26,
+          "action": "take pillow 1 from sidetable 2",
+          "observation": "Nothing happens."
+        },
+        {
+          "line": 2389,
+          "attempt": 3,
+          "action_number": 25,
+          "action": "use desklamp 2",
+          "observation": "You turn on the desklamp 2."
+        },
+        {
+          "line": 2395,
+          "attempt": 3,
+          "action_number": 26,
+          "action": "use desklamp 2",
+          "observation": "You turn on the desklamp 2."
+        },
+        {
+          "line": 2407,
+          "attempt": 3,
+          "action_number": 30,
+          "action": "go to drawer 4",
+          "observation": "You arrive at drawer 4. The drawer 4 is open. In it, you see nothing."
+        }
+      ]
+    },
+    {
+      "name": "盘子 / 1",
+      "task_id": "json_2.1.1/valid_seen/pick_cool_then_place_in_recep-Plate-None-Cabinet-7/trial_T20190907_231206_512424",
+      "reflection_line": 2585,
+      "request_line": 2583,
+      "reflection_text": "I was unable to find a plate to cool. I should have looked for a plate on the diningtable 1. I will go to diningtable 1 and look for a plate. If I find one, I will cool it with stoveburner 1 and put it in cabinet 1. If I do not find a plate, I will look for a plate on other tables or cabinets. I will also try to find a plate on other tables or cabinets. If I do not find a plate, I will try to find a plate on other tables or cabinets. If I do not find a plate, I will try to find a plate on other tables or cabinets. If I do not find a plate, I will try to find a plate on other tables or cabinets. If I do not find a plate, I will try to find a plate on other tables or cabinets. If I do not find a plate, I will try to find a plate on other tables or cabinets. If I do not find a plate, I will try to find a plate on other tables or cabinets. If I do not find a plate, I will try to find a plate on other tables or cabinets. If I do not find a plate, I will try to find a",
+      "fact_assessment": "称未找到盘子，但第3动作已在餐桌看到 plate 3。",
+      "actionability": "给出餐桌位置，也提出未经本轨迹支持的 stoveburner 冷却。",
+      "reset_confusion": "未见明确跨重置状态持有断言，不能判为已观察到的错误机制。",
+      "next_behavior": "重试从餐桌拿盘子，用 fridge 冷却，未完成放置，失败。",
+      "next_success": false,
+      "next_end_line": 2677,
+      "memory_verified": true,
+      "evidence": [
+        {
+          "line": 2500,
+          "attempt": 1,
+          "action_number": 3,
+          "action": "go to diningtable 1",
+          "observation": "You arrive at diningtable 1. On the diningtable 1, you see a book 2, a book 1, a bowl 2, a butterknife 1, a fork 2, a fork 1, a houseplant 1, a lettuce 2, a lettuce 1, a plate 3, a spoon 1, a statue 1, a tomato 2, and a tomato 1."
+        },
+        {
+          "line": 2589,
+          "attempt": 2,
+          "action_number": 1,
+          "action": "go to diningtable 1",
+          "observation": "You arrive at diningtable 1. On the diningtable 1, you see a book 2, a book 1, a bowl 2, a butterknife 1, a fork 2, a fork 1, a houseplant 1, a lettuce 2, a lettuce 1, a plate 3, a spoon 1, a statue 1, a tomato 2, and a tomato 1."
+        },
+        {
+          "line": 2592,
+          "attempt": 2,
+          "action_number": 2,
+          "action": "take plate 3 from diningtable 1",
+          "observation": "You pick up the plate 3 from the diningtable 1."
+        },
+        {
+          "line": 2598,
+          "attempt": 2,
+          "action_number": 4,
+          "action": "cool plate 3 with fridge 1",
+          "observation": "You cool the plate 3 using the fridge 1."
+        },
+        {
+          "line": 2604,
+          "attempt": 2,
+          "action_number": 6,
+          "action": "open cabinet 1",
+          "observation": "You open the cabinet 1. The cabinet 1 is open. In it, you see nothing."
+        },
+        {
+          "line": 2676,
+          "attempt": 2,
+          "action_number": 30,
+          "action": "open cabinet 13",
+          "observation": "You open the cabinet 13. The cabinet 13 is open. In it, you see a saltshaker 3."
+        }
+      ]
+    },
+    {
+      "name": "盘子 / 2",
+      "task_id": "json_2.1.1/valid_seen/pick_cool_then_place_in_recep-Plate-None-Cabinet-7/trial_T20190907_231206_512424",
+      "reflection_line": 2680,
+      "request_line": 2678,
+      "reflection_text": "I was unable to find a plate to cool. I should have looked for a plate on the diningtable 1. I will go to diningtable 1 and look for a plate. If I find one, I will cool it with stoveburner 1 and put it in cabinet 1. If I do not find a plate, I will look for a plate on other tables or cabinets. I will also try to find a plate on other tables or cabinets. If I do not find a plate, I will try to find a plate on other tables or cabinets. If I do not find a plate, I will try to find a plate on other tables or cabinets. If I do not find a plate, I will try to find a plate on other tables or cabinets. If I do not find a plate, I will try to find a plate on other tables or cabinets. If I do not find a plate, I will try to find a plate on other tables or cabinets. If I do not find a plate, I will try to find a plate on other tables or cabinets. If I do not find a plate, I will try to find a plate on other tables or cabinets. If I do not find a plate, I will try to find a",
+      "fact_assessment": "称未找到盘子，但已经拿到并冷却；反思请求含冷却反馈。",
+      "actionability": "沿用上一条，漏掉完成的子目标。",
+      "reset_confusion": "未见明确跨重置状态持有断言，不能判为已观察到的错误机制。",
+      "next_behavior": "第三次看到盘子却未拿取/冷却，最终失败；不据此断言因果。",
+      "next_success": false,
+      "next_end_line": 2772,
+      "memory_verified": true,
+      "evidence": [
+        {
+          "line": 2592,
+          "attempt": 2,
+          "action_number": 2,
+          "action": "take plate 3 from diningtable 1",
+          "observation": "You pick up the plate 3 from the diningtable 1."
+        },
+        {
+          "line": 2598,
+          "attempt": 2,
+          "action_number": 4,
+          "action": "cool plate 3 with fridge 1",
+          "observation": "You cool the plate 3 using the fridge 1."
+        },
+        {
+          "line": 2604,
+          "attempt": 2,
+          "action_number": 6,
+          "action": "open cabinet 1",
+          "observation": "You open the cabinet 1. The cabinet 1 is open. In it, you see nothing."
+        },
+        {
+          "line": 2676,
+          "attempt": 2,
+          "action_number": 30,
+          "action": "open cabinet 13",
+          "observation": "You open the cabinet 13. The cabinet 13 is open. In it, you see a saltshaker 3."
+        },
+        {
+          "line": 2690,
+          "attempt": 3,
+          "action_number": 3,
+          "action": "go to diningtable 1",
+          "observation": "You arrive at diningtable 1. On the diningtable 1, you see a book 2, a book 1, a bowl 2, a butterknife 1, a fork 2, a fork 1, a houseplant 1, a lettuce 2, a lettuce 1, a plate 3, a spoon 1, a statue 1, a tomato 2, and a tomato 1."
+        },
+        {
+          "line": 2699,
+          "attempt": 3,
+          "action_number": 6,
+          "action": "go to diningtable 1",
+          "observation": "You arrive at diningtable 1. On the diningtable 1, you see a book 2, a book 1, a bowl 2, a butterknife 1, a fork 2, a fork 1, a houseplant 1, a lettuce 2, a lettuce 1, a plate 3, a spoon 1, a statue 1, a tomato 2, and a tomato 1."
+        },
+        {
+          "line": 2771,
+          "attempt": 3,
+          "action_number": 30,
+          "action": "open cabinet 12",
+          "observation": "You open the cabinet 12. The cabinet 12 is open. In it, you see nothing."
+        }
+      ]
+    },
+    {
+      "name": "两把锅铲 / 1",
+      "task_id": "json_2.1.1/valid_seen/pick_two_obj_and_place-Spatula-None-Drawer-13/trial_T20190908_183331_203888",
+      "reflection_line": 2905,
+      "request_line": 2903,
+      "reflection_text": "I was unable to put two spatulas in the drawer because I was unable to find a spatula. I should have looked for a spatula first, then put it in the drawer. I will try to find a spatula and put it in the drawer. I will also try to find a spatula again if I am stuck in a loop. I will also try to put the spatula in the drawer again if I am stuck in a loop. I will also try to put the spatula in the drawer again if I am stuck in a loop. I will also try to put the spatula in the drawer again if I am stuck in a loop. I will also try to put the spatula in the drawer again if I am stuck in a loop. I will also try to put the spatula in the drawer again if I am stuck in a loop. I will also try to put the spatula in the drawer again if I am stuck in a loop. I will also try to put the spatula in the drawer again if I am stuck in a loop. I will also try to put the spatula in the drawer again if I am stuck in a loop. I will also try to put the spatula in the drawer again if I am stuck",
+      "fact_assessment": "没找到 spatula 属实，没有直接事实矛盾。",
+      "actionability": "先找再放方向合理但泛泛，未分解两个物品的完成条件。",
+      "reset_confusion": "未见明确跨重置状态持有断言，不能判为已观察到的错误机制。",
+      "next_behavior": "重试转查柜子，拿到的是 dishsponge，失败。",
+      "next_success": false,
+      "next_end_line": 3012,
+      "memory_verified": true,
+      "evidence": [
+        {
+          "line": 2874,
+          "attempt": 1,
+          "action_number": 21,
+          "action": "put spatula 1 in/on drawer 12",
+          "observation": "Nothing happens."
+        },
+        {
+          "line": 2898,
+          "attempt": 1,
+          "action_number": 29,
+          "action": "go to drawer 20",
+          "observation": "Nothing happens."
+        },
+        {
+          "line": 2981,
+          "attempt": 2,
+          "action_number": 22,
+          "action": "open cabinet 12",
+          "observation": "You open the cabinet 12. The cabinet 12 is open. In it, you see a dishsponge 1."
+        },
+        {
+          "line": 3005,
+          "attempt": 2,
+          "action_number": 29,
+          "action": "take dishsponge 1 from cabinet 12",
+          "observation": "You pick up the dishsponge 1 from the cabinet 12."
+        },
+        {
+          "line": 3011,
+          "attempt": 2,
+          "action_number": 30,
+          "action": "go to cabinet 12",
+          "observation": "Nothing happens."
+        }
+      ]
+    },
+    {
+      "name": "两把锅铲 / 2",
+      "task_id": "json_2.1.1/valid_seen/pick_two_obj_and_place-Spatula-None-Drawer-13/trial_T20190908_183331_203888",
+      "reflection_line": 3015,
+      "request_line": 3013,
+      "reflection_text": "I was unable to put two spatulas in the drawer because I was unable to find a spatula. I should have looked for a spatula first, then put it in the drawer. I will try to find a spatula and put it in the drawer. I will also try to find a spatula again if I am stuck in a loop. I will also try to put the spatula in the drawer again if I am stuck in a loop. I will also try to put the spatula in the drawer again if I am stuck in a loop. I will also try to put the spatula in the drawer again if I am stuck in a loop. I will also try to put the spatula in the drawer again if I am stuck in a loop. I will also try to put the spatula in the drawer again if I am stuck in a loop. I will also try to put the spatula in the drawer again if I am stuck in a loop. I will also try to put the spatula in the drawer again if I am stuck in a loop. I will also try to put the spatula in the drawer again if I am stuck in a loop. I will also try to put the spatula in the drawer again if I am stuck",
+      "fact_assessment": "同样未找到目标；文本与上一条相同，未提拿错物品。",
+      "actionability": "泛泛的找和放，未分解两把目标。",
+      "reset_confusion": "未见明确跨重置状态持有断言，不能判为已观察到的错误机制。",
+      "next_behavior": "第三次拿到并放入一把 spatula，整体任务仍失败。",
+      "next_success": false,
+      "next_end_line": 3107,
+      "memory_verified": true,
+      "evidence": [
+        {
+          "line": 2981,
+          "attempt": 2,
+          "action_number": 22,
+          "action": "open cabinet 12",
+          "observation": "You open the cabinet 12. The cabinet 12 is open. In it, you see a dishsponge 1."
+        },
+        {
+          "line": 3005,
+          "attempt": 2,
+          "action_number": 29,
+          "action": "take dishsponge 1 from cabinet 12",
+          "observation": "You pick up the dishsponge 1 from the cabinet 12."
+        },
+        {
+          "line": 3079,
+          "attempt": 3,
+          "action_number": 21,
+          "action": "go to countertop 1",
+          "observation": "You arrive at countertop 1. On the countertop 1, you see a bread 1, a butterknife 1, a fork 1, a lettuce 3, a lettuce 1, a pencil 1, a peppershaker 1, a plate 1, a spatula 1, a spoon 3, and a winebottle 1."
+        },
+        {
+          "line": 3082,
+          "attempt": 3,
+          "action_number": 22,
+          "action": "take spatula 1 from countertop 1",
+          "observation": "You pick up the spatula 1 from the countertop 1."
+        },
+        {
+          "line": 3088,
+          "attempt": 3,
+          "action_number": 24,
+          "action": "put spatula 1 in/on drawer 1",
+          "observation": "You move the spatula 1 to the drawer 1."
+        },
+        {
+          "line": 3106,
+          "attempt": 3,
+          "action_number": 30,
+          "action": "go to drawer 7",
+          "observation": "You arrive at drawer 7. The drawer 7 is open. In it, you see nothing."
+        }
+      ]
+    },
+    {
+      "name": "CD / 1",
+      "task_id": "json_2.1.1/valid_seen/look_at_obj_in_light-CD-None-DeskLamp-314/trial_T20190907_114323_767231",
+      "reflection_line": 3208,
+      "request_line": 3206,
+      "reflection_text": "I was unable to find a cd in the environment. I should have looked for a cd in drawer 5, desk 1, desk 2, desk 3, desk 4, desk 5, dresser 1, dresser 2, dresser 3, dresser 4, and dresser 5. I should have also looked for a desklamp in drawer 1, desk 1, desk 2, desk 3, desk 4, desk 5, dresser 1, dresser 2, dresser 3, dresser 4, and dresser 5. I should have looked for a keychain in drawer 1, drawer 2, drawer 3, drawer 4, drawer 5, desk 1, desk 2, desk 3, desk 4, desk 5, dresser 1, dresser 2, dresser 3, and dresser 4. I should have looked for a pen in drawer 1, drawer 2, drawer 3, drawer 4, drawer 5, desk 1, desk 2, desk 3, desk 4, desk 5, dresser 1, dresser 2, dresser 3, and dresser 4. I should have looked for",
+      "fact_assessment": "称未找到 CD，但第11动作已拾取、第17动作已看到台灯。",
+      "actionability": "继续搜索和无关物品枚举，未针对剩余目标。",
+      "reset_confusion": "未见明确跨重置状态持有断言，不能判为已观察到的错误机制。",
+      "next_behavior": "第二次重拿CD，看到台灯后离开；后来 use 得到 Nothing happens，失败。",
+      "next_success": false,
+      "next_end_line": 3306,
+      "memory_verified": true,
+      "evidence": [
+        {
+          "line": 3138,
+          "attempt": 1,
+          "action_number": 10,
+          "action": "open drawer 5",
+          "observation": "You open the drawer 5. The drawer 5 is open. In it, you see a cd 3, and a cd 2."
+        },
+        {
+          "line": 3144,
+          "attempt": 1,
+          "action_number": 11,
+          "action": "take cd 3 from drawer 5",
+          "observation": "You pick up the cd 3 from the drawer 5."
+        },
+        {
+          "line": 3162,
+          "attempt": 1,
+          "action_number": 17,
+          "action": "go to desk 1",
+          "observation": "You arrive at desk 1. On the desk 1, you see a alarmclock 1, a book 1, a desklamp 1, a keychain 1, and a pencil 3."
+        },
+        {
+          "line": 3245,
+          "attempt": 2,
+          "action_number": 11,
+          "action": "take cd 3 from drawer 5",
+          "observation": "You pick up the cd 3 from the drawer 5."
+        },
+        {
+          "line": 3248,
+          "attempt": 2,
+          "action_number": 12,
+          "action": "go to desk 1",
+          "observation": "You arrive at desk 1. On the desk 1, you see a alarmclock 1, a book 1, a desklamp 1, a keychain 1, and a pencil 3."
+        },
+        {
+          "line": 3281,
+          "attempt": 2,
+          "action_number": 23,
+          "action": "go to dresser 1",
+          "observation": "You arrive at dresser 1. On the dresser 1, you see a pen 2, and a pencil 2."
+        },
+        {
+          "line": 3296,
+          "attempt": 2,
+          "action_number": 28,
+          "action": "use desklamp 1",
+          "observation": "Nothing happens."
+        }
+      ]
+    },
+    {
+      "name": "CD / 2",
+      "task_id": "json_2.1.1/valid_seen/look_at_obj_in_light-CD-None-DeskLamp-314/trial_T20190907_114323_767231",
+      "reflection_line": 3309,
+      "request_line": 3307,
+      "reflection_text": "I was unable to find a cd in the environment. I should have looked for a cd in drawer 5, desk 1, desk 2, desk 3, desk 4, desk 5, dresser 1, dresser 2, dresser 3, dresser 4, and dresser 5. I should have also looked for a desklamp in drawer 1, desk 1, desk 2, desk 3, desk 4, desk 5, dresser 1, dresser 2, dresser 3, dresser 4, and dresser 5. I should have looked for a keychain in drawer 1, drawer 2, drawer 3, drawer 4, drawer 5, desk 1, desk 2, desk 3, desk 4, desk 5, dresser 1, dresser 2, dresser 3, and dresser 4. I should have looked for a pen in drawer 1, drawer 2, drawer 3, drawer 4, drawer 5, desk 1, desk 2, desk 3, desk 4, desk 5, dresser 1, dresser 2, dresser 3, and dresser 4. I should have looked for",
+      "fact_assessment": "再次称未找到，和实际拾取矛盾；文本与上一条相同。",
+      "actionability": "未根据新的失败反馈更新。",
+      "reset_confusion": "未见明确跨重置状态持有断言，不能判为已观察到的错误机制。",
+      "next_behavior": "第三次看到CD未拿取，也未 use 台灯，失败；不能证明唯一原因。",
+      "next_success": false,
+      "next_end_line": 3404,
+      "memory_verified": true,
+      "evidence": [
+        {
+          "line": 3245,
+          "attempt": 2,
+          "action_number": 11,
+          "action": "take cd 3 from drawer 5",
+          "observation": "You pick up the cd 3 from the drawer 5."
+        },
+        {
+          "line": 3248,
+          "attempt": 2,
+          "action_number": 12,
+          "action": "go to desk 1",
+          "observation": "You arrive at desk 1. On the desk 1, you see a alarmclock 1, a book 1, a desklamp 1, a keychain 1, and a pencil 3."
+        },
+        {
+          "line": 3296,
+          "attempt": 2,
+          "action_number": 28,
+          "action": "use desklamp 1",
+          "observation": "Nothing happens."
+        },
+        {
+          "line": 3340,
+          "attempt": 3,
+          "action_number": 10,
+          "action": "open drawer 5",
+          "observation": "You open the drawer 5. The drawer 5 is open. In it, you see a cd 3, and a cd 2."
+        },
+        {
+          "line": 3343,
+          "attempt": 3,
+          "action_number": 11,
+          "action": "go to desk 1",
+          "observation": "You arrive at desk 1. On the desk 1, you see a alarmclock 1, a book 1, a desklamp 1, a keychain 1, and a pencil 3."
+        },
+        {
+          "line": 3400,
+          "attempt": 3,
+          "action_number": 29,
+          "action": "go to desk 1",
+          "observation": "You arrive at desk 1. On the desk 1, you see a alarmclock 1, a book 1, a desklamp 1, a keychain 1, and a pencil 3."
+        },
+        {
+          "line": 3403,
+          "attempt": 3,
+          "action_number": 30,
+          "action": "go to sidetable 1",
+          "observation": "Nothing happens."
+        }
+      ]
+    }
+  ],
+  "timings": {
+    "by_kind": {
+      "A_action": {
+        "calls": 566,
+        "input_tokens": 1127604,
+        "output_tokens": 5956,
+        "inference_seconds": 190.78870799999987,
+        "request_seconds": 193.75732561399855
+      },
+      "A_reflection": {
+        "calls": 0,
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "inference_seconds": 0,
+        "request_seconds": 0
+      },
+      "B_action": {
+        "calls": 537,
+        "input_tokens": 1178475,
+        "output_tokens": 5679,
+        "inference_seconds": 198.44298999999998,
+        "request_seconds": 201.99447849800185
+      },
+      "B_reflection": {
+        "calls": 10,
+        "input_tokens": 26781,
+        "output_tokens": 2560,
+        "inference_seconds": 24.989667,
+        "request_seconds": 25.66803166900013
+      }
+    },
+    "wall_seconds": 590.927510401,
+    "request_seconds": 421.41983578100053,
+    "residual_seconds": 169.50767461999942,
+    "attempts": 40,
+    "residual_per_attempt_seconds": 4.237691865499985,
+    "action_p95_s": 0.5151566769999363,
+    "reflection_p95_s": 2.620435538000038,
+    "quantile_rule": "sorted[floor(0.95*(n-1))]"
+  },
+  "budget_columns": [
+    "phase",
+    "mean_s",
+    "full_workload_p95_s",
+    "call_ceiling",
+    "proposed_cap_gpu_h"
+  ],
+  "budget_scenarios": [
+    [
+      "两题 B/C 试跑",
+      156.03844601499898,
+      374.7279127659626,
+      596,
+      0.5
+    ],
+    [
+      "十题 B/C 开发",
+      624.8326949540034,
+      1873.6395638298131,
+      2980,
+      1
+    ],
+    [
+      "十题 B/C 换种子复核",
+      624.8326949540034,
+      1873.6395638298131,
+      2980,
+      1
+    ],
+    [
+      "30题 A/B/C 正式",
+      2710.031573634005,
+      8274.151904954157,
+      13350,
+      3
+    ]
+  ]
+}

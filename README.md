@@ -4,15 +4,17 @@ AIAA 4051 自然语言处理课程项目
 
 我们想知道：**智能体在 ALFWorld 做错一次之后，能不能利用文字反思，在下一次尝试里改变行动、少犯同样的错？**
 
-从本地复现 M1，请先看 [ALFWorld 与 A/B 基线](docs/baseline.md)。教程、两任务试跑和十任务开发集共用 `scripts/run_baseline.py`。
+当前准备在学校 GPU 比较 A/B/S1–S5：见[学校运行流程](docs/experiments/school-gpu-runbook.md)和[就绪检查报告](docs/reports/seven-arm-readiness.md)。七组入口已接入；本次仅完成无模型检查，尚未启动学校实验。历史 M1 复现和结果见 [ALFWorld 与 A/B 基线](docs/experiments/baseline.md)。
 
 ## 仓库导航
 
 | 我想做什么 | 从这里开始 |
 | --- | --- |
+| 查计划、实验说明、论文笔记和历史交接 | [文档索引](docs/README.md)；[研究执行计划](docs/planning/plan.md) · [一页速览](docs/planning/plan.html) |
 | 复现 A/B 基线 | `scripts/run_baseline.py` → `configs/` → `src/` |
+| 上传仓库并使用学校 GPU | [学校 GPU 操作流程](docs/experiments/school-gpu-runbook.md)：七组共用入口、Slurm/容器脚本、预检和日志回收 |
 | 看 Agent 如何执行和反思 | `src/agent/`、`src/environment/`、`src/reflection/` |
-| 核对原始提示词、反思和模型版本 | [基线说明](docs/baseline.md)及 `configs/baseline.json` |
+| 核对原始提示词、反思和模型版本 | [基线说明](docs/experiments/baseline.md)及 `configs/baseline.json` |
 | A/B/C 留出对照 | M2–M3 规划，开发集验证后冻结 C |
 | 查成功率、图表或失败案例 | `results/tables/`、`results/figures/`、`results/failure_analysis/` |
 | 找某次运行的完整轨迹 | 从结果里的运行编号查 `logs/README.md` 的定位方式 |
@@ -46,12 +48,18 @@ nlp-final-project-p3-reflection/
 │   └── utils/                         # 共用的配置读取和日志写入
 ├── scripts/
 │   ├── run_baseline.py                # A/B 基线入口，调用 src/ 中的公共实现
-│   ├── run_experiment.py              # 读取配置并运行 A/B/C 对照实验
+│   ├── run_experiment.py              # A/B/S1–S5 开发集筛选与配对汇总
+│   ├── run_school_gpu.sh              # 学校分配节点内的服务和实验管理
+│   ├── school_gpu.sbatch              # 一张 GPU 串行七组的 Slurm 模板
 │   └── analyze_results.py             # 从日志生成指标表和图表
 ├── tests/                             # 验证环境重置、尝试上限和指标计算
 ├── docs/
-│   ├── experiment_protocol.md         # 实验变量、任务划分与指标定义
-│   ├── paper_notes/                   # 与实现或复现直接相关的论文笔记
+│   ├── README.md                      # 文档用途与位置索引
+│   ├── planning/                      # 宏观计划 plan.md 与一页速览 plan.html
+│   ├── experiments/                   # baseline.md、anchor_attempt1.md
+│   ├── papers/                        # 论文阅读笔记（当前仅占位）
+│   ├── handoffs/                      # 历史交接与本次迁移检查记录
+│   ├── experiment_protocol.md         # 实验变量、任务划分与指标定义（待补）
 │   └── decisions/                     # 影响复现的技术决定及证据
 ├── data/
 │   └── README.md                      # 数据来源、获取方式和固定任务 ID 的位置
@@ -80,6 +88,8 @@ nlp-final-project-p3-reflection/
 ## 实验设计
 
 在文本交互环境 ALFWorld 中复用 Reflexion 实现，固定一个开源指令微调模型，只做推理实验。
+
+开发筛选使用 `configs/seven_arm.json`：A/B/S1–S5 × 固定 10 题 × 种子 4051/4052；原 `baseline.json` 保持不变。学校准备环境执行 `python scripts/run_experiment.py --check-only` 可校验冻结资源，不加载模型。正式启动与获批预算分开，命令见学校流程。C 由开发结果决定，当前入口不读取留出任务。
 
 | 条件 | 第一次失败后怎么重试 |
 | --- | --- |

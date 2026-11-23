@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>P3 项目一页速览</title>
+<style>
+:root{--bg:#f4f5f1;--paper:#fff;--ink:#182d30;--muted:#5d6e70;--line:#dfe5de;--green:#176951;--soft:#eaf3ee;--amber:#875619}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.65 "Microsoft YaHei","PingFang SC",system-ui,sans-serif}main{max-width:1060px;margin:auto;padding:38px 30px 26px}header{border-top:5px solid var(--green);padding-top:20px}.eyebrow{display:flex;justify-content:space-between;gap:12px;color:var(--muted);font-size:12px;letter-spacing:.08em}h1{font-size:36px;line-height:1.25;margin:15px 0 10px;letter-spacing:-1px}h1 span{font-weight:400;color:var(--muted)}.lead{font-size:19px;margin:0 0 18px}.verdict{background:var(--ink);color:white;border-radius:12px;padding:17px 21px;display:flex;gap:18px;align-items:center}.verdict strong{white-space:nowrap;color:#aad9bd}.verdict p{margin:0}.grid{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:23px}section{min-width:0}h2{font-size:18px;margin:0 0 12px;display:flex;gap:10px;align-items:center}h2 small{font-size:11px;font-weight:600;color:var(--green);letter-spacing:.1em}.panel{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:20px}.ancestry{display:grid;grid-template-columns:1fr 1fr;gap:10px}.ancestor{border-left:2px solid #b9d1c1;padding-left:11px}.ancestor b{display:block;font-size:15px}.ancestor p{margin:2px 0;font-size:13px;color:var(--muted)}.scope{font-size:12px;color:var(--muted);margin:14px 0 0}.status{display:grid;gap:10px}.status div{display:flex;gap:12px;align-items:baseline}.tag{font-size:12px;white-space:nowrap;border-radius:5px;padding:2px 8px;background:var(--soft);color:var(--green);font-weight:700}.tag.pending{background:#f7efdf;color:var(--amber)}.status p{margin:0;font-size:14px}table{width:100%;border-collapse:collapse;font-size:14px}th{text-align:left;color:var(--muted);font-size:12px;font-weight:500}td,th{padding:9px 5px;border-bottom:1px solid var(--line)}td:last-child,th:last-child{text-align:right}td b{font-size:21px;font-variant-numeric:tabular-nums;color:var(--green)}tr:last-child td{border-bottom:0}.note{font-size:13px;color:var(--muted);margin:12px 0 0}.finding{margin:0 0 13px;padding-bottom:12px;border-bottom:1px solid var(--line)}.finding:last-child{margin:0;padding:0;border:0}.finding b{font-size:15px}.finding p{font-size:13px;margin:3px 0 0;color:var(--muted)}.next{margin-top:23px}.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.step{background:var(--soft);border-radius:10px;padding:16px}.step .number{font-size:12px;font-weight:700;color:var(--green)}.step h3{font-size:17px;margin:5px 0}.step p{font-size:13px;margin:0;color:var(--muted)}.action{margin:14px 0 0;font-size:14px;padding-left:12px;border-left:3px solid var(--green)}details{margin-top:24px;border-top:1px solid var(--line);padding-top:12px;font-size:12px;color:var(--muted)}summary{cursor:pointer;font-weight:600}details p{margin:10px 0}a{color:var(--green);text-underline-offset:3px}a:focus-visible,summary:focus-visible{outline:3px solid #6ea98a;outline-offset:4px}footer{display:flex;justify-content:space-between;gap:14px;font-size:11px;color:var(--muted);padding-top:14px}code{overflow-wrap:anywhere;font-size:11px}@media(max-width:700px){main{padding:22px 17px}h1{font-size:29px}.lead{font-size:17px}.grid,.steps{grid-template-columns:1fr;gap:16px}.verdict{display:block}.verdict strong{display:block;margin-bottom:5px}.panel{padding:17px}.eyebrow{letter-spacing:0}footer{display:block}}@media print{@page{size:A4;margin:12mm}body{background:white;font-size:12px}main{padding:0;max-width:none}h1{font-size:26px}.lead{font-size:15px}.grid{gap:13px;margin-top:14px}.panel{padding:13px}h2{font-size:15px}.steps{gap:10px}.step{padding:11px}.next{margin-top:15px}.verdict{background:#eaf3ee;color:#182d30;padding:12px}.verdict strong{color:#176951}.scope,.note,.finding p,.step p,.ancestor p{font-size:11px}td,th{padding:5px}details{display:none}footer{font-size:9px}.panel,.step{break-inside:avoid}}
+</style>
+</head>
+<body><main>
+<header>
+<div class="eyebrow"><span>AIAA 4051 · NLP 课程项目</span><span>审阅快照 / 2026.11.22</span></div>
+<h1>从失败中学习 <span>· 项目速览</span></h1>
+<p class="lead">AI 做家务失败后，写一段反思，下一次能不能做得更好？</p>
+<div class="verdict"><strong>目前判断</strong><p>本地 A/B 基线已跑通；反思效果尚无定论。下一步先完成 C 组和正式评测。</p></div>
+</header>
+<div class="grid">
+<section class="panel"><h2><small>01</small> 前人做了什么</h2>
+<div class="ancestry">
+<div class="ancestor"><b>ALFWorld · 环境</b><p>提供找物品、清洗、放置等文字任务。</p></div>
+<div class="ancestor"><b>ReAct · 行动</b><p>模型边思考、边行动、边读环境反馈。</p></div>
+<div class="ancestor"><b>Reflexion · 反思</b><p>失败后写经验，带进下一次尝试。</p></div>
+<div class="ancestor"><b>Anchor · 筛选经验</b><p>先测试笔记对动作偏好的影响，再保留。</p></div>
+</div>
+<p class="scope">我们研究反思内容如何影响行为，不训练模型参数。Anchor 是独立移植支线。</p>
+</section>
+<section class="panel"><h2><small>02</small> 我们做到哪里</h2>
+<div class="status">
+<div><span class="tag">已完成</span><p>本地环境、手动教程、10 题 A/B 与完整轨迹。</p></div>
+<div><span class="tag">已实跑</span><p>Anchor 建库、筛选和评测，但未观察到成功率收益。</p></div>
+<div><span class="tag pending">缺产物</span><p>C 反思提示词、冻结版本、30 题正式评测。</p></div>
+<div><span class="tag pending">待核实</span><p>学校 GPU 复跑；队友独立验收。</p></div>
+</div>
+<p class="scope">进度记录滞后：Notion 的 M1 仍标“未开始”。</p>
+</section>
+<section class="panel"><h2><small>03</small> 跑出了什么结果</h2>
+<table aria-label="开发集三次内累计成功任务数"><thead><tr><th scope="col">条件</th><th scope="col">失败后怎么处理</th><th scope="col">成功数</th></tr></thead><tbody>
+<tr><td>A · 无反思</td><td>直接重试</td><td><b>6/10</b></td></tr>
+<tr><td>B · 原始反思</td><td>写反思再重试</td><td><b>6/10</b></td></tr>
+<tr><td>C · 自定义反思</td><td>只改反思提示词</td><td>待跑</td></tr>
+<tr><td>Anchor 支线</td><td>筛选 / 不筛选笔记</td><td>均 <b>0/10</b></td></tr>
+</tbody></table>
+<p class="note">A/B 总分相同，成功题目不同；B 推理耗时约多 17%。样本小，尚不能判定反思普遍有效或无效。</p>
+<p class="note">Anchor 改了动作策略，不能把与 A/B 的差距归因于筛选。各题最多 3 次，每次 30 个动作。</p>
+</section>
+<section class="panel"><h2><small>04</small> 三个值得追查的问题</h2>
+<div class="finding"><b>反思把事实记错了</b><p>已经拿到 CD，却总结成“没找到”。10 条反思全部触及 256 token 上限，部分重复、未写完。</p></div>
+<div class="finding"><b>Anchor 一次也没拿东西</b><p>两组各走 900 步，均未执行 take；数百次候选里其实有拿取命令。</p></div>
+<div class="finding"><b>笔记相关性门槛挡不住低相关内容</b><p>通过类型与动作检查后，最低分 0.70 已超过门槛 0.45。找书时可能收到找肥皂瓶的建议。</p></div>
+</section>
+</div>
+<section class="next"><h2><small>05</small> 接下来只抓三件事</h2>
+<div class="steps">
+<article class="step"><span class="number">先 / 整理证据</span><h3>把基线交接清楚</h3><p>同步代码、日志和状态。验收：队友能按说明复跑两题。</p></article>
+<article class="step"><span class="number">再 / 改善反思</span><h3>做 C 组</h3><p>反思短、依据观察、给出具体改法。验收：只改反思提示词，跑完 10 道开发题并冻结。</p></article>
+<article class="step"><span class="number">最后 / 正式比较</span><h3>跑 30 道留出题</h3><p>A/B/C 同配置评测。验收：成功率、成本和案例都能追溯到日志。</p></article>
+</div>
+<p class="action"><b>Anchor 限时诊断：</b>先补“同一动作策略、不加笔记”的对照，分清是行动策略问题还是笔记干扰。</p>
+</section>
+<details><summary>查看证据与范围</summary>
+<p>依据 <a href="review-2026-11-22.md">11 月 22 日复审</a> 的代码与原始日志审阅，未重新运行模型。现有结果是小规模工作流复现，尚不能称为原论文定量成绩复现；Anchor 原文一致性仍待复核。</p>
+<p>A/B：<code>m1-dev-ab-20261110</code>；Anchor：<code>anchor-attempt1-bank-v1</code>、<code>anchor-attempt1-dev</code>。模型为 Qwen2.5-1.5B-Instruct Q4_K_M。C 与留出评测“缺产物”指已审阅位置未见完成证据。</p>
+<p><a href="https://github.com/ericzhengpig1-png/nlp-final-project-p3-reflection/tree/feat/alfworld-baseline">基线代码</a> · <a href="https://app.notion.com/p/41314e8b4b628118a6e1cddf18adcbc0">项目工作台</a> · <a href="review-2026-11-22.md">完整审阅记录</a> · <a href="plan.md">当前研究计划</a> · <a href="https://chatgpt.com/library?file_id=libfile_e0fbcf7f7dd08191a40c6018a3e699be&amp;account_id=personal">原 Library 记录</a> · <a href="../README.md">文档索引</a></p>
+</details>
+<footer><span>P3 · Learning from Failure</span><span>判断依据：现有代码与实跑日志；后续步骤为建议计划。</span></footer>
+</main></body></html>

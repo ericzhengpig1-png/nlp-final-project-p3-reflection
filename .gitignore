@@ -1,4 +1,6 @@
 .venv/
+/.venv
+/models
 __pycache__/
 *.py[cod]
 .ipynb_checkpoints/

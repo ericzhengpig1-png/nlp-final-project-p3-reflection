@@ -28,7 +28,10 @@ llama.cpp 源码固定为 `b12244` / `d5bbcd1f31dba754f716a26c3a4784502a6b9ede`�
 source /hpc/jhinno/modules-4.2/init/bash
 module load gcc-12.1.0 cuda-12.8 cmake-3.24
 cd "$HOME/p3-work/llama.cpp-b12244"
+mkdir -p "$HOME/p3-work/cuda-link-stubs"
+ln -sfn /hpc/jhinno/cuda/cuda-12.8/targets/x86_64-linux/lib/stubs/libcuda.so "$HOME/p3-work/cuda-link-stubs/libcuda.so.1"
 cmake -S . -B build-cuda-gcc12 -DCMAKE_BUILD_TYPE=Release \
+  -DCMAKE_EXE_LINKER_FLAGS="-Wl,-rpath-link=$HOME/p3-work/cuda-link-stubs" \
   -DCMAKE_C_COMPILER=/hpc/software/gcc-12.1.0/bin/gcc \
   -DCMAKE_CXX_COMPILER=/hpc/software/gcc-12.1.0/bin/g++ \
   -DCMAKE_CUDA_HOST_COMPILER=/hpc/software/gcc-12.1.0/bin/g++ \
@@ -40,6 +43,8 @@ cmake --build build-cuda-gcc12 --target llama-server --parallel 8
 ```
 
 归档没有 `.git`，显式 build number/commit 与真实原始源码一致。默认运行库是上述 `build-cuda-gcc12/bin/llama-server`；运行时加载相同 GCC/CUDA 模块。构建选项参考[固定版本官方说明](https://github.com/ggml-org/llama.cpp/blob/b12244/docs/build.md)。
+
+CPU 编译节点没有 NVIDIA 驱动库，因此最终链接使用 CUDA toolkit stub 的 SONAME 链接和仅链接期的 `-rpath-link`。自建 `cuda-link-stubs` 目录不会加入 GPU 作业的 `LD_LIBRARY_PATH` 或运行期 RPATH。CMake 自带 RPATH 包含 toolkit 的 stubs 目录，但该目录没有 `libcuda.so.1`；所需驱动须由 GPU 节点提供，实际版本与 GPU offload 在冒烟中验证。服务器直连 GitHub 不稳定时，可通过 SCP 传输 `git bundle` 并 fast-forward 到同一提交，不改变代码版本。
 
 ## 提交
 

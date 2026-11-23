@@ -1,6 +1,6 @@
 # 学校 GPU：七组实验部署与运行
 
-> **当前账号请使用[HPC 一期实际运行流程](school-phase1.md)**：`hpc1login.hpc.hkust-gz.edu.cn` / `yq_mgt02`，UniScheduler (`jsub`)。一期入口和独立 smoke 模式已补齐，30 项无模型测试通过。用户已授权先冒烟、成功后后台运行七组；具体提交和执行状态以最新交接及调度器为准。本页以下保留二期 Slurm/容器参考，当前账号不要执行第 6 节 `sbatch`。资源下载问题的处理见[学校端准备报告](../reports/school-preparation-2026-11-23.md)。
+> **当前账号请使用[HPC 一期实际运行流程](school-phase1.md)**：`hpc1login.hpc.hkust-gz.edu.cn` / `yq_mgt02`，UniScheduler (`jsub`)。一期入口、独立冒烟和短作业合并已补齐，学校 34 项无模型测试通过。用户最新指定优先 A/B/S1/S4 四组，成功依赖链已提交；状态见[短作业记录](../reports/school-priority-launch-2026-11-23.md)。本页以下保留二期 Slurm/容器参考，当前账号不要执行第 6 节 `sbatch`。资源下载问题的处理见[学校端准备报告](../reports/school-preparation-2026-11-23.md)。
 
 前序准备阶段的验证记录见[就绪检查报告](../reports/seven-arm-readiness.md)；其中“未启动实验”是该阶段的历史状态。最新学校运行授权与一期流程见上面的链接。
 

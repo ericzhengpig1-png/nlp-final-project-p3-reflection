@@ -1,75 +1,85 @@
-# 学校 HPC 一期：冒烟与后台七组实验
+# 学校 HPC 一期：S1 / S4 优先短作业
 
-2026-11-23 用户已授权在学校先冒烟、通过后运行七组。当前账号使用 `hpc1login.hpc.hkust-gz.edu.cn` 的 UniScheduler；使用 `jsub`，不是二期的 `sbatch`。排队和运行以 `jjobs` 的实际状态为准。
+2026-11-23 最新决定：先比较 **A（无反思）、B（原反思）、S1（观察证据）、S4（剩余目标）**。S2、S3、S5 暂不提交。优先级来自[原调研记录](../papers/reflection-remedies-2026-11-23.md)，并非已验证的效果排名。
 
-## 固定输入与规模
+## 范围与时限
 
-- 复用 `configs/seven_arm.json` 的 A/B/S1–S5、提示词、模型、采样和重试预算。
-- 冒烟：`P3_MODE=smoke`，registry 第一题、seed 4051、七组，共 7 单元，1 GPU、最多 15 分钟。单题成功率不能用来筛选方案。
-- 正式筛选：`P3_MODE=screening`，10 题、4051/4052 两种子、七组，共 140 单元，1 GPU、最多 300 分钟。与冒烟分目录，不合并指标。
-- 结果都写入学校共享盘的 `logs/`；断开 SSH 不会取消已提交的批作业。模型推理只发生在调度器分配的 GPU 节点。
+| 阶段 | 内容 | 资源与上限 |
+| --- | --- | --- |
+| 独立冒烟 | 第一题、4051、四组，4 单元 | 1 GPU，10 分钟 |
+| 正式分批 | 每批一道题、一个种子、四组；10 题 × 2 种子，共 20 批、80 单元 | 每批 1 GPU，10 分钟，串行成功依赖 |
+| 合并 | 完整性、版本与首轮审计校验，然后配对汇总 | 1 CPU，5 分钟，不申请 GPU |
 
-## 已准备的 CUDA 运行库
+20 批正式作业的 GPU 时限合计最多 200 分钟，另加 10 分钟冒烟；实际占用以学校调度记录为准。时限不是预计耗时，超时会停止后续依赖，不能把未完成批次算作失败样本。短作业是否更快获分配仍取决于队列资源。
 
-源代码为 llama.cpp `b12244`，commit `d5bbcd1f31dba754f716a26c3a4784502a6b9ede`。源码通过 `git archive HEAD` 生成 LF tar，SHA-256：`96bccbdea51ea9774292e1b90b5a7c5945985f6bc4a02c91f23801b8508fb1ea`。学校路径为 `$HOME/p3-work/llama.cpp-b12244`，编译在 normal 队列的 CPU 作业执行。
+复用冻结协议中的模型、提示词、采样、每题动作与重试预算。从原七组轮转顺序中过滤出本轮四组；分批使用全局题号，避免每批都重新从 A 开始。不同组的环境和记忆独立重置。冒烟与正式结果分目录保存。
+
+## 当前账号与固定运行库
+
+入口为 `hpc1login.hpc.hkust-gz.edu.cn`，实际登录节点 `yq_mgt02`，调度器 UniScheduler。使用 `jsub`；本账号不用二期 `sbatch` 模板。已提交批作业由调度器管理，关闭 SSH 不会取消作业。
+
+llama.cpp 源码固定为 `b12244` / `d5bbcd1f31dba754f716a26c3a4784502a6b9ede`。`git archive HEAD` 的 LF tar SHA-256 为 `96bccbdea51ea9774292e1b90b5a7c5945985f6bc4a02c91f23801b8508fb1ea`。
+
+学校 GCC 编译发现上游 `server-context.cpp` 使用 `std::setw` 却缺少 `<iomanip>`；仅补充这个标准头文件，补丁见 [llama-b12244-iomanip.patch](../../patches/llama-b12244-iomanip.patch)。不改推理逻辑、提示词或采样。原始构建还发现 CMake 的 `cc/c++` 自动指向系统 GCC 8，因此最终显式指定 GCC 12.1。全部四组/批次共用修复后的同一运行库，manifest 记录二进制及共享库组合哈希、GPU 型号与驱动；汇总拒绝它们不一致。
+
+以下构建命令仅在学校 CPU 计算作业运行：
 
 ```bash
 source /hpc/jhinno/modules-4.2/init/bash
 module load gcc-12.1.0 cuda-12.8 cmake-3.24
 cd "$HOME/p3-work/llama.cpp-b12244"
-cmake -S . -B build-cuda -DCMAKE_BUILD_TYPE=Release \
+cmake -S . -B build-cuda-gcc12 -DCMAKE_BUILD_TYPE=Release \
+  -DCMAKE_C_COMPILER=/hpc/software/gcc-12.1.0/bin/gcc \
+  -DCMAKE_CXX_COMPILER=/hpc/software/gcc-12.1.0/bin/g++ \
+  -DCMAKE_CUDA_HOST_COMPILER=/hpc/software/gcc-12.1.0/bin/g++ \
   -DGGML_CUDA=ON -DGGML_NATIVE=OFF -DCMAKE_CUDA_ARCHITECTURES=80 \
   -DLLAMA_BUILD_NUMBER=12244 -DLLAMA_BUILD_COMMIT=d5bbcd1f \
   -DLLAMA_BUILD_TESTS=OFF -DLLAMA_BUILD_UI=OFF -DLLAMA_USE_PREBUILT_UI=OFF \
   -DLLAMA_OPENSSL=OFF
-cmake --build build-cuda --target llama-server --parallel 8
+cmake --build build-cuda-gcc12 --target llama-server --parallel 8
 ```
 
-归档没有 `.git`，所以显式设置与实际源代码一致的 build number/commit；模型权重与运行时版本检查保持启用。构建参数参考[固定版本的官方构建说明](https://github.com/ggml-org/llama.cpp/blob/b12244/docs/build.md)。入口 `scripts/school_gpu_phase1.sh` 加载相同 GCC/CUDA 模块，并默认使用上述 `build-cuda/bin/llama-server`。
+归档没有 `.git`，显式 build number/commit 与真实原始源码一致。默认运行库是上述 `build-cuda-gcc12/bin/llama-server`；运行时加载相同 GCC/CUDA 模块。构建选项参考[固定版本官方说明](https://github.com/ggml-org/llama.cpp/blob/b12244/docs/build.md)。
 
-## 提交与成功依赖
+## 提交
 
-以下命令在学校仓库根目录执行。先同步并确认干净提交；从提交冒烟到正式作业结束，保持此目录的代码、运行库和冻结输入不变。编译完成并通过预检后再提交；若编译仍在排队/运行，可给冒烟增加 `-w 'done(实际编译作业号)'`。
+在学校仓库根目录完成同步和无模型预检。每次使用新 campaign ID，避免重复申请；从提交到整轮结束，不要修改此目录的代码或运行库。
 
 ```bash
 cd "$HOME/p3-work/repo"
 git status --porcelain
-.venv/bin/python scripts/run_experiment.py --check-only --smoke
-.venv/bin/python scripts/run_experiment.py --check-only
-mkdir -p logs
-jsub -q gpu -n 4 -R 'span[hosts=1]' -gpgpu 1 -M 16384 -W 15 \
-  -J p3-smoke -o "$PWD/logs/unischeduler-%J.out" -e "$PWD/logs/unischeduler-%J.err" \
-  env P3_MODE=smoke bash "$PWD/scripts/school_gpu_phase1.sh"
+.venv/bin/python scripts/run_experiment.py --check-only --smoke --conditions A B S1 S4
+.venv/bin/python scripts/run_experiment.py --check-only --task-index 0 --seeds 4051 --conditions A B S1 S4
+export P3_CAMPAIGN=priority-s1s4-新的唯一编号
+# 编译仍在进行时可设置 P3_BUILD_JOB=实际编译作业号；已完成则不用设置。
+bash scripts/submit_priority_phase1.sh
 ```
 
-记下返回的冒烟作业号，再提交正式任务的成功依赖。`SMOKE_JOB` 必须替换成刚返回的实际数字：
+提交脚本依次提交四组冒烟、20 个正式短作业以及 CPU 合并作业。每个作业依赖前一个 `done(作业号)`，任一阶段异常退出则后续不会运行；成功或失败的任务结果本身不是基础设施异常。提交失败时保留已返回的作业号，不自动重试或重复提交。
 
-```bash
-SMOKE_JOB=实际冒烟作业号
-jsub -q gpu -n 4 -R 'span[hosts=1]' -gpgpu 1 -M 16384 -W 300 \
-  -w "done($SMOKE_JOB)" -J p3-screening \
-  -o "$PWD/logs/unischeduler-%J.out" -e "$PWD/logs/unischeduler-%J.err" \
-  env P3_MODE=screening bash "$PWD/scripts/school_gpu_phase1.sh"
-```
+GPU 检查、服务启动、版本和输入校验、环境重置/首轮一致性检查都保留。冒烟通过要求 `mode=smoke`、`status=complete`、4/4 单元；一个任务上的结果只用于验证流程。
 
-`done(...)` 要求前序作业成功退出；GPU 不可见、服务启动失败、输入漂移、环境状态或首轮行为不一致都会使冒烟失败。正式任务此时保持等待，不会绕过冒烟。七组在一道题上失败本身是有效实验结果，不等于基础设施失败。若冒烟因时限退出，也不得把部分结果当作通过。
-
-默认运行编号：`school-smoke-<作业号>` / `school-screening-<作业号>`。同一作业不会覆盖已有运行目录。冒烟的 `summary.json` 必须为 `mode=smoke`、`status=complete`、7/7 单元；首轮核对写入 `task_results.jsonl` 和 `trace.jsonl`。正式结果只有 `full_two_seed_screening=true` 才是完整两种子筛选。
-
-## 查看、停止与证据
+## 状态、证据与停止
 
 ```bash
 jjobs -u "$USER"
 jjobs -l 实际作业号
-jhist 实际作业号
-tail -n 30 logs/school-smoke-实际冒烟作业号-job/experiment.log
-cat logs/school-smoke-实际冒烟作业号/summary.json
+cat logs/实际campaign-submission/jobs.tsv
+tail -n 30 logs/实际campaign-smoke-job/experiment.log
+cat logs/实际campaign-smoke/summary.json
+cat logs/实际campaign-merged/summary.json
 ```
 
-`PEND` 是等待，`RUN` 才是正在运行。若显示 `Job's GPU resource requirements not satisfied`，表示当前资源申请未获满足，不能据此断言模型有错。正式任务还可能显示前序依赖未满足。
+`PEND` 表示等待，`RUN` 才表示运行。`Job's GPU resource requirements not satisfied` 表示 GPU 申请未满足；`Waiting for job dependency to be satisfied` 表示前序尚未成功。目录在对应程序启动后才出现。
 
-要取消整条链，应先取消正式任务，再取消冒烟：`jctrl kill 实际正式作业号`，然后 `jctrl kill 实际冒烟作业号`，避免冒烟成功后正式任务继续启动。已完成的任务无需取消。
+- `logs/<campaign>-submission/`：提交时 Git SHA、GPU 作业表和 CPU 合并作业号。
+- `logs/<campaign>-smoke/`：独立冒烟轨迹和摘要。
+- `logs/<campaign>-s4051-t0/` 等：每批 manifest、trace、task_results、summary。
+- 每个运行对应的 `-job/`：GPU 信息、预检、server.log、experiment.log、退出记录。
+- `logs/<campaign>-merged/`：20 批来源及哈希、80 单元、四组配对指标。`full_two_seed_screening=false`，因为 S2/S3/S5 尚未运行；四组完整性由 80/80 和条件列表确认，不能称作七组完成。
 
-每个 `logs/<run-id>-job/` 保存 GPU 信息、CUDA 设备、预检、服务日志、实验日志和退出记录；`logs/<run-id>/` 保存 manifest、逐步轨迹、逐题结果和 summary。`server.log` 可核对 GPU offload；`job.json` 保存 UniScheduler 作业号、执行节点、CUDA 分配和退出码。总耗时/计费以学校调度器记录为准，不能只统计生成 token 的时间。
+合并拒绝缺失、重复、不完整、混入冒烟、首轮审计不一致或不同代码/配置/提示词/运行库/GPU 型号/驱动的批次。失败/重跑消耗和调度占卡时长另报，不用成功批次的生成耗时代替总预算。
 
-调度命令依据[学校一期作业说明](https://docs.hpc.hkust-gz.edu.cn/docs/hpc12/slurm/job1/)及服务器 `jsub -h`；`gpu` 是官方列出的 A30 队列，见[学校队列表](https://docs.hpc.hkust-gz.edu.cn/docs/hpc12/slurm/queue/)。
+如需停止整轮，先取消合并及后续等待批次，再取消最前面的活动任务，使用 `jctrl kill 作业号`；ID 从 submission 目录读取。不要重新执行同一 campaign 的提交脚本，也不要在普通登录节点手动启动模型。
+
+命令依据[学校一期作业说明](https://docs.hpc.hkust-gz.edu.cn/docs/hpc12/slurm/job1/)及服务器 `jsub -h`；`gpu` 为官方列出的 A30 队列，见[队列表](https://docs.hpc.hkust-gz.edu.cn/docs/hpc12/slurm/queue/)。

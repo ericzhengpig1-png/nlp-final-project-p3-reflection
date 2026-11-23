@@ -4,7 +4,7 @@ AIAA 4051 自然语言处理课程项目
 
 我们想知道：**智能体在 ALFWorld 做错一次之后，能不能利用文字反思，在下一次尝试里改变行动、少犯同样的错？**
 
-当前在学校 GPU 部署 A/B/S1–S5：见[一期实际运行流程](docs/experiments/school-phase1.md)。七组入口和独立冒烟模式已接入，30 项无模型检查通过；用户已授权先冒烟、成功后后台运行正式筛选。实际作业状态见 [AI_SYNC.md](AI_SYNC.md)。历史 M1 复现和结果见 [ALFWorld 与 A/B 基线](docs/experiments/baseline.md)。
+当前优先在学校 GPU 比较 **A/B/S1/S4**，S2/S3/S5 暂不提交：见[一期短作业运行流程](docs/experiments/school-phase1.md)。先做独立四组冒烟，成功后运行 20 个短批次，共 80 个正式单元，再自动校验合并。实际作业状态见 [AI_SYNC.md](AI_SYNC.md)。历史 M1 复现和结果见 [ALFWorld 与 A/B 基线](docs/experiments/baseline.md)。
 
 ## 仓库导航
 

@@ -7,6 +7,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 from scripts import run_experiment as experiment
+from scripts.merge_screening import merge_runs
 from scripts.run_baseline import ROOT, reflexion_assets, run_task
 from src.reflection.instructions import reflection_prompt
 from tests.test_baseline import ScriptedModel
@@ -60,6 +61,58 @@ class ScreeningTest(unittest.TestCase):
                          {'paired_tasks': 2, 'wins': 1, 'losses': 1, 'ties': 0, 'net_successes': 0})
         self.assertEqual(summary['per_seed']['4051']['S5']['completed_tasks'], 0)
         self.assertIsNone(summary['per_seed']['4051']['S5']['cumulative_success_rate'])
+
+    def test_short_jobs_preserve_global_order_and_priority_subset(self):
+        conditions = ('A', 'B', 'S1', 'S4')
+        full = experiment.make_schedule(self.tasks, experiment.SEEDS, conditions)
+        shards = [row for seed in experiment.SEEDS for index, task in enumerate(self.tasks)
+                  for row in experiment.make_schedule([task], [seed], conditions, task_offset=index)]
+        self.assertEqual(shards, full)
+        self.assertEqual(len(shards), 80)
+        self.assertEqual(full, [row for row in experiment.make_schedule(self.tasks, experiment.SEEDS)
+                                if row['condition'] in conditions])
+        for invalid in (('S1', 'S4'), ('A', 'B', 'A'), ('B', 'A')):
+            with self.assertRaises(ValueError):
+                experiment.make_schedule(self.tasks, [4051], invalid)
+
+    def test_merge_priority_shards_and_reject_bad_inputs(self):
+        conditions = ('A', 'B', 'S1', 'S4')
+        inputs = self.protocol, self.config, self.tasks, self.instructions, self.games, self.assets
+        with tempfile.TemporaryDirectory() as directory, patch.object(experiment, 'LlamaServer'), \
+                patch.object(experiment, 'run_task', side_effect=self.fake_task), \
+                patch.object(experiment, 'git', side_effect=lambda *args: '' if args[0] == 'status' else 'test-commit'), \
+                contextlib.redirect_stdout(io.StringIO()):
+            root, paths = Path(directory), []
+            for seed in experiment.SEEDS:
+                for index in range(10):
+                    path = root / f'{seed}-{index}'
+                    experiment.execute(path, 'http://unused', [seed], experiment.select_inputs(inputs, task_index=index),
+                                       task_index=index, conditions=conditions)
+                    paths.append(path)
+            summary = merge_runs(paths, root / 'merged')
+            self.assertEqual((summary['completed_units'], summary['conditions']), (80, list(conditions)))
+            self.assertFalse(summary['full_two_seed_screening'])
+            self.assertNotIn('S2', summary['per_seed']['4051'])
+            self.assertEqual(summary['mean_over_requested_seeds']['S4']['net_successes_vs_B'], 0)
+            self.assertEqual(summary['mean_over_requested_seeds']['S1']['net_successes_vs_A'], 10)
+            self.assertEqual(summary['all_cost_including_incomplete']['model_calls'], 80)
+            with self.assertRaisesRegex(ValueError, 'Duplicate'):
+                merge_runs(paths + [paths[0]], root / 'duplicate')
+            with self.assertRaisesRegex(ValueError, 'Missing'):
+                merge_runs(paths[:-1], root / 'missing')
+            source = paths[0] / 'manifest.json'
+            original = json.loads(source.read_text())
+            for field, value, message in (('mode', 'smoke', 'Only complete'),
+                                           ('git_commit', 'different', 'Incompatible')):
+                source.write_text(json.dumps({**original, field: value}))
+                with self.assertRaisesRegex(ValueError, message):
+                    merge_runs(paths, root / 'bad')
+            source.write_text(json.dumps(original))
+            status_path = paths[0] / 'summary.json'
+            original_summary = json.loads(status_path.read_text())
+            status_path.write_text(json.dumps({**original_summary, 'status': 'interrupted'}))
+            with self.assertRaisesRegex(ValueError, 'Only complete'):
+                merge_runs(paths, root / 'partial')
 
     def test_real_environment_all_groups_isolate_memory(self):
         def actions(context):

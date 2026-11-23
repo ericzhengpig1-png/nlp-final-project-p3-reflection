@@ -26,8 +26,14 @@ mode_args=()
 case "${P3_MODE:-screening}" in
     screening) read -r -a seeds <<< "${P3_SEEDS:-4051 4052}" ;;
     smoke) mode_args=(--smoke); seeds=(4051) ;;
-    *) echo 'P3_MODE must be smoke or screening' >&2; exit 2 ;;
+    shard)
+        [[ "${P3_TASK_INDEX:-}" =~ ^[0-9]$ && "${P3_SEEDS:-}" =~ ^405[12]$ ]] || { echo 'Shard requires P3_TASK_INDEX=0..9 and one P3_SEEDS=4051 or 4052' >&2; exit 2; }
+        mode_args=(--task-index "$P3_TASK_INDEX"); seeds=("$P3_SEEDS") ;;
+    *) echo 'P3_MODE must be smoke, shard or screening' >&2; exit 2 ;;
 esac
+condition_text="${P3_CONDITIONS:-A B S1 S2 S3 S4 S5}"
+read -r -a conditions <<< "${condition_text//,/ }"
+mode_args+=(--conditions "${conditions[@]}")
 export OMP_NUM_THREADS="${SLURM_CPUS_PER_TASK:-4}"
 export PYTHONUNBUFFERED=1
 export P3_JOB_LOG_DIR="$ROOT/logs/$P3_RUN_ID-job"
@@ -76,6 +82,22 @@ trap 'exit 143' TERM
 
 command -v setsid >/dev/null
 nvidia-smi --query-gpu=name,uuid,driver_version,memory.total --format=csv > "$P3_JOB_LOG_DIR/gpu.csv"
+export P3_RUNTIME_SHA256="$("$P3_PYTHON" - "$P3_SERVER" <<'PY'
+import hashlib, sys
+from pathlib import Path
+binary = Path(sys.argv[1]).resolve()
+parts = [(p.name, hashlib.sha256(p.read_bytes()).hexdigest())
+         for p in sorted({binary, *binary.parent.glob('lib*.so*')}) if p.is_file()]
+print(hashlib.sha256(repr(parts).encode()).hexdigest())
+PY
+)"
+export P3_GPU_TYPE_DRIVER="$("$P3_PYTHON" - "$P3_JOB_LOG_DIR/gpu.csv" <<'PY'
+import csv, json, sys
+with open(sys.argv[1]) as source:
+    rows = list(csv.reader(source))[1:]
+print(json.dumps(sorted({(r[0].strip(), r[2].strip()) for r in rows})))
+PY
+)"
 "$P3_PYTHON" scripts/run_experiment.py --check-only --seeds "${seeds[@]}" "${mode_args[@]}" > "$P3_JOB_LOG_DIR/preflight.json"
 "$P3_PYTHON" - "$P3_PORT" <<'PY'
 import socket, sys

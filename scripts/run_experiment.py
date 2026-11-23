@@ -68,31 +68,35 @@ def load_inputs():
     return protocol, config, tasks, instructions, games, assets
 
 
-def make_schedule(tasks, seeds):
+def make_schedule(tasks, seeds, conditions=CONDITIONS, task_offset=0):
     if not seeds or list(seeds) != [seed for seed in SEEDS if seed in seeds]:
         raise ValueError("Seeds must be a nonempty ordered subset of 4051, 4052")
+    if tuple(conditions) != tuple(c for c in CONDITIONS if c in conditions) or not {'A', 'B'} <= set(conditions):
+        raise ValueError("Conditions must be an ordered unique subset including A and B")
     schedule = []
     for seed in seeds:
         for index, task_id in enumerate(tasks):
-            offset = (index + SEEDS.index(seed)) % len(CONDITIONS)
+            offset = (task_offset + index + SEEDS.index(seed)) % len(CONDITIONS)
             for condition in CONDITIONS[offset:] + CONDITIONS[:offset]:
-                schedule.append(dict(seed=seed, task_id=task_id, condition=condition))
+                if condition in conditions:
+                    schedule.append(dict(seed=seed, task_id=task_id, condition=condition))
     return schedule
 
 
-def select_inputs(inputs, smoke=False):
-    if not smoke:
+def select_inputs(inputs, smoke=False, task_index=None):
+    if not smoke and task_index is None:
         return inputs
     protocol, config, tasks, instructions, games, assets = inputs
-    tasks = tasks[:1]
+    index = 0 if smoke else task_index
+    tasks = tasks[index:index + 1]
     return protocol, config, tasks, instructions, {t: games[t] for t in tasks}, assets
 
 
-def summarize(results, seeds, task_count):
+def summarize(results, seeds, task_count, conditions=CONDITIONS):
     per_seed, paired = {}, {}
     for seed in seeds:
         by_condition = {c: {r["task_id"]: r for r in results if r["seed"] == seed and r["condition"] == c}
-                        for c in CONDITIONS}
+                        for c in conditions}
         per_seed[str(seed)], paired[str(seed)] = {}, {}
         for condition, rows in by_condition.items():
             attempts = {task: row["attempts"] for task, row in rows.items()}
@@ -118,13 +122,13 @@ def summarize(results, seeds, task_count):
                     "paired_tasks": len(common), "wins": wins, "losses": losses,
                     "ties": len(common) - wins - losses, "net_successes": wins - losses,
                 }
-    complete = len(results) == len(seeds) * task_count * len(CONDITIONS)
+    complete = len(results) == len(seeds) * task_count * len(conditions)
     mean = None
     if complete:
         mean = {c: {"cumulative_success_rate": sum(per_seed[str(s)][c]["cumulative_success_rate"] for s in seeds) / len(seeds),
                     "net_successes_vs_A": sum(paired[str(s)][c]["A"]["net_successes"] for s in seeds) / len(seeds),
                     "net_successes_vs_B": sum(paired[str(s)][c]["B"]["net_successes"] for s in seeds) / len(seeds)}
-                for c in CONDITIONS}
+                for c in conditions}
     return {"per_seed": per_seed, "paired": paired, "mean_over_requested_seeds": mean,
             "unique_tasks": task_count, "note": "Repeated seeds are not independent tasks; partial rates use completed tasks only."}
 
@@ -135,13 +139,15 @@ def write_json(path, data):
     temporary.replace(path)
 
 
-def execute(run, server, seeds, inputs, smoke=False):
+def execute(run, server, seeds, inputs, smoke=False, task_index=None, conditions=CONDITIONS):
     protocol, config, tasks, instructions, games, assets = inputs
-    schedule = make_schedule(tasks, seeds)
+    schedule = make_schedule(tasks, seeds, conditions, task_offset=task_index or 0)
     run.mkdir(parents=True, exist_ok=False)
     start = time.perf_counter()
     metadata = {
-        "mode": "smoke" if smoke else "screening",
+        "mode": "smoke" if smoke else ("shard" if task_index is not None else "screening"),
+        "task_index": task_index, "conditions": list(conditions),
+        "runtime_sha256": os.getenv("P3_RUNTIME_SHA256"), "gpu_type_driver": os.getenv("P3_GPU_TYPE_DRIVER"),
         "run_id": run.name, "git_commit": git("rev-parse", "HEAD"),
         "git_dirty": bool(git("status", "--porcelain")), "protocol": protocol, "config": config,
         "protocol_sha256": sha256((ROOT / "configs/seven_arm.json").read_text(encoding="utf-8").encode()),
@@ -180,14 +186,15 @@ def execute(run, server, seeds, inputs, smoke=False):
                 audit.append([event, {k: fields[k] for k in AUDIT_FIELDS[event]}])
 
         def save_summary():
-            summary = summarize(results, seeds, len(tasks))
+            summary = summarize(results, seeds, len(tasks), conditions)
             if status != "complete":
                 summary["mean_over_requested_seeds"] = None
             summary.update(status=status, error=error_text, completed_units=len(results), expected_units=len(schedule),
-                           mode=metadata["mode"],
+                           mode=metadata["mode"], conditions=list(conditions),
                            wall_seconds=time.perf_counter() - start, all_cost_including_incomplete=all_cost,
                            active_unit=current if status != "complete" else None,
-                           full_two_seed_screening=not smoke and status == "complete" and len(tasks) == 10 and tuple(seeds) == SEEDS)
+                           full_two_seed_screening=not smoke and status == "complete" and len(tasks) == 10
+                           and tuple(seeds) == SEEDS and tuple(conditions) == CONDITIONS)
             write_json(run / "summary.json", summary)
 
         try:
@@ -228,6 +235,8 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--check-only", action="store_true", help="Check frozen inputs without any model requests")
     parser.add_argument("--smoke", action="store_true", help="Separate smoke run: first development task, all groups, seed 4051")
+    parser.add_argument("--task-index", type=int, choices=range(10), help="One development task per short job; requires one seed")
+    parser.add_argument("--conditions", nargs="+", choices=CONDITIONS, default=list(CONDITIONS))
     parser.add_argument("--run-id", help="New directory under logs/; never overwritten")
     parser.add_argument("--seeds", type=int, nargs="+", choices=SEEDS)
     parser.add_argument("--server", default="http://127.0.0.1:8080")
@@ -235,14 +244,16 @@ def main():
     args.seeds = args.seeds or ([4051] if args.smoke else list(SEEDS))
     if args.smoke and args.seeds != [4051]:
         parser.error("--smoke uses only seed 4051")
+    if args.task_index is not None and (args.smoke or len(args.seeds) != 1):
+        parser.error("--task-index requires one seed and cannot be combined with --smoke")
     if not args.check_only and (not args.run_id or not args.run_id.isascii() or
                                not args.run_id.replace("-", "").replace("_", "").isalnum()):
         parser.error("--run-id must contain ASCII letters, digits, hyphens or underscores")
-    inputs = select_inputs(load_inputs(), args.smoke)
-    schedule = make_schedule(inputs[2], args.seeds)
+    inputs = select_inputs(load_inputs(), args.smoke, args.task_index)
+    schedule = make_schedule(inputs[2], args.seeds, args.conditions, task_offset=args.task_index or 0)
     if args.check_only:
-        print(json.dumps({"check": "passed", "mode": "smoke" if args.smoke else "screening",
-                          "conditions": CONDITIONS, "seeds": args.seeds,
+        print(json.dumps({"check": "passed", "mode": "smoke" if args.smoke else ("shard" if args.task_index is not None else "screening"),
+                          "conditions": args.conditions, "seeds": args.seeds, "task_index": args.task_index,
                           "tasks": len(inputs[2]), "units": len(schedule), "model_requests": 0}, indent=2))
         return
     if git("status", "--porcelain"):
@@ -252,7 +263,8 @@ def main():
         raise KeyboardInterrupt(f"signal {signum}")
 
     signal.signal(signal.SIGTERM, terminate)
-    execute(ROOT / "logs" / args.run_id, args.server, args.seeds, inputs, smoke=args.smoke)
+    execute(ROOT / "logs" / args.run_id, args.server, args.seeds, inputs, smoke=args.smoke,
+            task_index=args.task_index, conditions=args.conditions)
 
 
 if __name__ == "__main__":

@@ -15,6 +15,48 @@ from unittest.mock import patch
 ROOT = Path(__file__).resolve().parents[1]
 
 
+@unittest.skipUnless(sys.platform.startswith('linux'), 'School submission requires Bash')
+class Phase1SubmissionTest(unittest.TestCase):
+    def test_bounded_priority_chain_and_no_resubmission(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            for folder in ('scripts', 'logs', 'bin'):
+                (root / folder).mkdir()
+            shutil.copyfile(ROOT / 'scripts/submit_priority_phase1.sh', root / 'scripts/submit_priority_phase1.sh')
+            (root / 'bin/git').write_text('#!/bin/sh\nexit 0\n')
+            (root / 'bin/jsub').write_text(f'#!{sys.executable}\n' + '''
+import json, sys
+from pathlib import Path
+path = Path('calls.json')
+calls = json.loads(path.read_text()) if path.exists() else []
+calls.append(sys.argv[1:])
+path.write_text(json.dumps(calls))
+print(f'Job <{40000 + len(calls)}> is submitted to queue <test>')
+''')
+            for path in (root / 'bin').iterdir():
+                path.chmod(0o755)
+            env = {**os.environ, 'PATH': str(root / 'bin') + ':' + os.environ['PATH'],
+                   'P3_CAMPAIGN': 'priority-test', 'P3_BUILD_JOB': '39999'}
+            command = ['bash', str(root / 'scripts/submit_priority_phase1.sh')]
+            result = subprocess.run(command, cwd=root, env=env, capture_output=True, text=True)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            calls = json.loads((root / 'calls.json').read_text())
+            self.assertEqual(len(calls), 22)
+            for index, args in enumerate(calls):
+                self.assertEqual(args[args.index('-w') + 1], f'done({39999 if index == 0 else 40000 + index})')
+                if index < 21:
+                    self.assertEqual(args[args.index('-gpgpu') + 1], '1')
+                    self.assertEqual(args[args.index('-W') + 1], '10')
+                    self.assertIn('P3_CONDITIONS=A,B,S1,S4', args)
+            self.assertIn('P3_MODE=smoke', calls[0])
+            self.assertIn('P3_SEEDS=4052', calls[20])
+            self.assertIn('P3_TASK_INDEX=9', calls[20])
+            self.assertNotIn('-gpgpu', calls[-1])
+            again = subprocess.run(command, cwd=root, env=env, capture_output=True)
+            self.assertNotEqual(again.returncode, 0)
+            self.assertEqual(json.loads((root / 'calls.json').read_text()), calls)
+
+
 @unittest.skipUnless(sys.platform.startswith('linux'), 'School wrappers require Linux')
 class SchoolWrapperTest(unittest.TestCase):
     def setUp(self):
@@ -74,6 +116,9 @@ sys.exit(int(os.getenv('FAKE_EXIT', '0')))
         self.env.pop('P3_CONTAINER', None)
         self.env.pop('JH_JOBID', None)
         self.env.pop('P3_MODE', None)
+        self.env.pop('P3_CONDITIONS', None)
+        self.env.pop('P3_TASK_INDEX', None)
+        self.env.pop('P3_SEEDS', None)
 
     def command(self):
         return ['bash', str(self.root / 'scripts/run_school_gpu.sh')]
@@ -138,6 +183,15 @@ sys.exit(int(os.getenv('FAKE_EXIT', '0')))
     def test_runner_failure_propagates(self):
         self.env['FAKE_EXIT'] = '7'
         self.run_wrapper(7)
+
+    def test_priority_shard_arguments(self):
+        self.env.update(P3_MODE='shard', P3_TASK_INDEX='3', P3_SEEDS='4052', P3_CONDITIONS='A B S1 S4')
+        path = self.root / 'scripts/run_experiment.py'
+        path.write_text("import sys\nassert sys.argv[sys.argv.index('--task-index') + 1] == '3'\n"
+                        "assert sys.argv[sys.argv.index('--seeds') + 1] == '4052'\n"
+                        "assert sys.argv[sys.argv.index('--conditions') + 1:sys.argv.index('--conditions') + 5] == ['A','B','S1','S4']\n"
+                        + path.read_text())
+        self.run_wrapper(0)
 
     def test_server_startup_failure(self):
         self.env['FAKE_START_FAIL'] = '1'
